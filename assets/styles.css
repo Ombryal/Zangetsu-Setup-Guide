@@ -7,7 +7,13 @@
   --accent: #6ea8fe;
   --border: #22304a;
   --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
-  --radius: 22px;
+
+  /* Unified radius scale */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-full: 999px;
+
   --max: 1080px;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -56,7 +62,7 @@ button:focus-visible {
   background: var(--accent);
   color: #fff;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   z-index: 1000;
   font-weight: 600;
   transition: top 0.2s ease;
@@ -107,7 +113,7 @@ button.ghost-button {
   justify-content: center;
   min-height: 46px;
   padding: 0 16px;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: rgba(17, 26, 43, 0.78);
   box-shadow: var(--shadow);
@@ -142,7 +148,7 @@ button.ghost-button {
 .panel {
   border: 1px solid var(--border);
   background: rgba(17, 26, 43, 0.88);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }
 
@@ -175,7 +181,7 @@ button.ghost-button {
 
 .download-area { display: grid; gap: 12px; }
 
-/* Top row with badge, refresh, timestamp */
+/* Top row with badge, refresh, share, timestamp */
 .download-top-row {
   display: flex;
   align-items: center;
@@ -187,11 +193,18 @@ button.ghost-button {
   font-size: 0.85rem;
   min-height: 36px;
   padding: 0 10px;
+  border-radius: var(--radius-md);
+}
+
+.release-date {
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 .last-updated {
   font-size: 0.75rem;
   color: var(--muted);
+  margin-left: auto;
 }
 
 .download-row {
@@ -216,6 +229,7 @@ button.ghost-button {
   overflow: hidden;
   text-overflow: ellipsis;
   gap: 10px;
+  border-radius: var(--radius-md);
   background: linear-gradient(180deg, rgba(110,168,254,0.2), rgba(110,168,254,0.1));
 }
 
@@ -232,6 +246,7 @@ button.ghost-button {
 .copy-btn {
   font-size: 0.85rem;
   min-height: 46px;
+  border-radius: var(--radius-md);
 }
 
 .qr-code {
@@ -241,7 +256,7 @@ button.ghost-button {
   gap: 4px;
   padding: 8px;
   background: rgba(255,255,255,0.05);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
 }
 
@@ -264,7 +279,7 @@ button.ghost-button {
   margin-top: 8px;
   padding: 12px;
   background: rgba(110,168,254,0.07);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   border: 1px solid rgba(110,168,254,0.15);
 }
 
@@ -308,7 +323,7 @@ button.ghost-button {
   display: inline-flex;
   width: fit-content;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: rgba(110,168,254,0.14);
   color: #cfe1ff;
   font-size: 0.85rem;
@@ -343,7 +358,7 @@ button.ghost-button {
 .theme-toggle-btn {
   background: none;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   padding: 8px 12px;
   color: var(--text);
   cursor: pointer;
@@ -351,6 +366,15 @@ button.ghost-button {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* Installation feedback panel */
+.install-feedback {
+  margin-top: 10px;
+}
+.install-btn {
+  min-height: 46px;
+  border-radius: var(--radius-md);
 }
 
 @media (max-width: 760px) {
