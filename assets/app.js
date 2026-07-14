@@ -41,6 +41,40 @@ document.addEventListener("DOMContentLoaded", () => {
   if (toggleBtn) toggleBtn.addEventListener("click", toggleTheme);
 });
 
+/* ---------- Language selector (placeholder) ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const langSelect = document.getElementById("language-select");
+  if (langSelect) {
+    langSelect.addEventListener("change", (e) => {
+      if (e.target.value !== "en") {
+        alert("Language support coming soon!");
+        langSelect.value = "en"; // reset to English
+      }
+    });
+  }
+});
+
+/* ---------- GitHub star count ---------- */
+async function fetchStarCount() {
+  const starLink = document.getElementById("github-star");
+  if (!starLink) return;
+  try {
+    const response = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}`, {
+      headers: { Accept: "application/vnd.github+json" },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      const count = data.stargazers_count;
+      starLink.innerHTML = `★ Star <span class="star-count">${count}</span>`;
+    } else {
+      // Keep default text on error
+    }
+  } catch {
+    // Silently fail, leave default text
+  }
+}
+document.addEventListener("DOMContentLoaded", fetchStarCount);
+
 /* ---------- Back to top button ---------- */
 function initBackToTop() {
   const btn = document.getElementById("back-to-top");
@@ -184,7 +218,7 @@ function createReleaseNotes(body) {
 /* ---------- Installation feedback ---------- */
 function initInstallFeedback() {
   const main = document.querySelector("main");
-  if (!main || !document.body.dataset.page) return; // only on platform pages
+  if (!main || !document.body.dataset.page) return;
 
   const feedbackDiv = document.createElement("section");
   feedbackDiv.className = "panel install-feedback";
@@ -267,7 +301,7 @@ async function loadRelease(forceRefresh = false) {
     const page = document.body.dataset.page;
     const asset = detectAssetName(page, release.assets || []);
 
-    // Look for a checksum file
+    // Checksum file lookup
     const checksumAsset = release.assets?.find(a =>
       a.name.toLowerCase().includes("checksum") ||
       a.name.toLowerCase().includes("sha256") ||
@@ -276,7 +310,7 @@ async function loadRelease(forceRefresh = false) {
 
     target.innerHTML = "";
 
-    // Top row: badge, refresh, share, timestamp
+    // Top row
     const topRow = document.createElement("div");
     topRow.className = "download-top-row";
 
@@ -285,7 +319,6 @@ async function loadRelease(forceRefresh = false) {
     versionBadge.textContent = release.tag_name || "Latest release";
     topRow.appendChild(versionBadge);
 
-    // Release date
     if (release.published_at) {
       const dateSpan = document.createElement("span");
       dateSpan.className = "release-date";
@@ -343,15 +376,36 @@ async function loadRelease(forceRefresh = false) {
 
       target.appendChild(row);
 
-      // Checksum link
+      // Checksum actions
       if (checksumAsset) {
+        const checksumRow = document.createElement("div");
+        checksumRow.className = "checksum-row";
+
         const checksumLink = document.createElement("a");
         checksumLink.className = "ghost-button";
         checksumLink.href = checksumAsset.browser_download_url;
         checksumLink.target = "_blank";
         checksumLink.rel = "noopener noreferrer";
         checksumLink.textContent = "Verify checksum";
-        target.appendChild(checksumLink);
+        checksumRow.appendChild(checksumLink);
+
+        // Copy checksum URL button
+        const copyChecksumBtn = document.createElement("button");
+        copyChecksumBtn.className = "ghost-button copy-btn";
+        copyChecksumBtn.textContent = "Copy checksum URL";
+        copyChecksumBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(checksumAsset.browser_download_url);
+            copyChecksumBtn.textContent = "Copied!";
+            setTimeout(() => (copyChecksumBtn.textContent = "Copy checksum URL"), 2000);
+          } catch {
+            copyChecksumBtn.textContent = "Failed";
+            setTimeout(() => (copyChecksumBtn.textContent = "Copy checksum URL"), 2000);
+          }
+        });
+        checksumRow.appendChild(copyChecksumBtn);
+
+        target.appendChild(checksumRow);
       }
     } else {
       const fallback = document.createElement("p");
