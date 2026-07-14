@@ -11,6 +11,8 @@
     <link rel="dns-prefetch" href="https://api.github.com" />
     <link rel="dns-prefetch" href="https://github.com" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="../assets/app.js"></script>
+    <script defer src="../assets/download.js"></script>
 
     <meta property="og:title" content="Windows Setup | Zangetsu" />
     <meta property="og:description" content="Install Zangetsu on your Windows desktop or laptop – grab the latest exe or portable zip from GitHub." />
@@ -21,8 +23,6 @@
     <meta name="twitter:title" content="Windows Setup | Zangetsu" />
     <meta name="twitter:description" content="Install Zangetsu on your Windows desktop or laptop – grab the latest exe or portable zip from GitHub." />
     <meta name="twitter:image" content="https://yourdomain.com/assets/og-image.png" />
-
-    <script defer src="../assets/app.js"></script>
   </head>
   <body data-page="windows">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -33,7 +33,10 @@
         <h1 id="page-title">Windows Setup Guide</h1>
         <p class="subtext">Download the Windows build from GitHub Releases – available as an installer or portable zip.</p>
       </div>
-      <a class="ghost-button" href="../">Back to Setup Guide</a>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
+        <a class="ghost-button" href="../">Back to Setup Guide</a>
+      </div>
     </header>
 
     <main id="main-content" class="content" aria-labelledby="page-title">
@@ -62,13 +65,13 @@
       </section>
 
       <section class="panel">
-  <h2>System requirements</h2>
-  <ul>
-    <li>Windows 10 version 1809 or later (64‑bit)</li>
-    <li>4 GB RAM recommended</li>
-    <li>200 MB free disk space</li>
-    <li>Microsoft Visual C++ Redistributable may be required</li>
-  </ul>
+        <h2>System requirements</h2>
+        <ul>
+          <li>Windows 10 version 1809 or later (64‑bit)</li>
+          <li>4 GB RAM recommended</li>
+          <li>200 MB free disk space</li>
+          <li>Microsoft Visual C++ Redistributable may be required</li>
+        </ul>
       </section>
     </main>
   </body>
