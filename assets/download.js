@@ -114,7 +114,7 @@ function createShareButton() {
   return btn;
 }
 
-/* ---------- Release notes preview ---------- */
+/* ---------- Release notes preview (blurred fade) ---------- */
 function createReleaseNotes(body) {
   if (!body) return null;
   const div = document.createElement("div");
@@ -122,11 +122,14 @@ function createReleaseNotes(body) {
   const heading = document.createElement("h3");
   heading.textContent = "What’s new";
   div.appendChild(heading);
-  let preview = body.replace(/^#.*$/gm, '').trim().substring(0, 400);
-  if (body.length > 400) preview += '…';
-  const p = document.createElement("p");
-  p.textContent = preview;
-  div.appendChild(p);
+
+  // Remove markdown headings and keep the raw text
+  const cleaned = body.replace(/^#.*$/gm, '').trim();
+  const textDiv = document.createElement("div");
+  textDiv.className = "release-preview-text";
+  textDiv.textContent = cleaned;
+  div.appendChild(textDiv);
+
   return div;
 }
 
