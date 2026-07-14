@@ -62,6 +62,17 @@ function formatBytes(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
 
+/* ---------- Utility: format date ---------- */
+function formatDate(isoString) {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 /* ---------- Asset detection ---------- */
 function detectAssetName(page, assets) {
   const patterns = {
@@ -135,6 +146,25 @@ function createCopyButton(url) {
   return btn;
 }
 
+/* ---------- Share page button ---------- */
+function createShareButton() {
+  const btn = document.createElement("button");
+  btn.className = "ghost-button copy-btn";
+  btn.textContent = "Share page";
+  btn.addEventListener("click", async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = "Link copied!";
+      setTimeout(() => (btn.textContent = "Share page"), 2000);
+    } catch {
+      btn.textContent = "Failed";
+      setTimeout(() => (btn.textContent = "Share page"), 2000);
+    }
+  });
+  return btn;
+}
+
 /* ---------- Release notes preview ---------- */
 function createReleaseNotes(body) {
   if (!body) return null;
@@ -151,6 +181,47 @@ function createReleaseNotes(body) {
   return div;
 }
 
+/* ---------- Installation feedback ---------- */
+function initInstallFeedback() {
+  const main = document.querySelector("main");
+  if (!main || !document.body.dataset.page) return; // only on platform pages
+
+  const feedbackDiv = document.createElement("section");
+  feedbackDiv.className = "panel install-feedback";
+  feedbackDiv.innerHTML = `
+    <h2>Installation</h2>
+    <p>Let us know you’ve installed Zangetsu!</p>
+  `;
+  const btn = document.createElement("button");
+  btn.className = "ghost-button install-btn";
+  btn.textContent = "I installed Zangetsu";
+  btn.addEventListener("click", () => {
+    const count = parseInt(localStorage.getItem("installCount") || "0") + 1;
+    localStorage.setItem("installCount", count);
+    btn.textContent = `Thanks! (${count})`;
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = "I installed Zangetsu";
+      btn.disabled = false;
+    }, 2000);
+  });
+  feedbackDiv.appendChild(btn);
+  main.appendChild(feedbackDiv);
+}
+
+document.addEventListener("DOMContentLoaded", initInstallFeedback);
+
+/* ---------- Keyboard shortcut: R to refresh ---------- */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "r" || e.key === "R") {
+    const activeTag = document.activeElement.tagName.toLowerCase();
+    if (activeTag !== "input" && activeTag !== "textarea") {
+      e.preventDefault();
+      loadRelease(true);
+    }
+  }
+});
+
 /* ---------- Main loader ---------- */
 async function loadRelease(forceRefresh = false) {
   const target = document.getElementById("download-area");
@@ -162,7 +233,6 @@ async function loadRelease(forceRefresh = false) {
     let release;
     let fetchTime = Date.now();
 
-    // Check cache unless forced refresh
     if (!forceRefresh) {
       const cached = getCachedData();
       if (cached) {
@@ -180,10 +250,11 @@ async function loadRelease(forceRefresh = false) {
         if (response.status === 403 && response.headers.get("x-ratelimit-remaining") === "0") {
           const resetTime = response.headers.get("x-ratelimit-reset");
           const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null;
-          const message = `GitHub API rate limit exceeded. ${
-            resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."
-          }`;
-          throw new Error(message);
+          throw new Error(
+            `GitHub API rate limit exceeded. ${
+              resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."
+            }`
+          );
         }
         throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
       }
@@ -196,9 +267,16 @@ async function loadRelease(forceRefresh = false) {
     const page = document.body.dataset.page;
     const asset = detectAssetName(page, release.assets || []);
 
+    // Look for a checksum file
+    const checksumAsset = release.assets?.find(a =>
+      a.name.toLowerCase().includes("checksum") ||
+      a.name.toLowerCase().includes("sha256") ||
+      a.name.toLowerCase().endsWith(".sha256")
+    );
+
     target.innerHTML = "";
 
-    // Top row: badge + refresh + timestamp
+    // Top row: badge, refresh, share, timestamp
     const topRow = document.createElement("div");
     topRow.className = "download-top-row";
 
@@ -207,14 +285,22 @@ async function loadRelease(forceRefresh = false) {
     versionBadge.textContent = release.tag_name || "Latest release";
     topRow.appendChild(versionBadge);
 
-    // Manual refresh button
+    // Release date
+    if (release.published_at) {
+      const dateSpan = document.createElement("span");
+      dateSpan.className = "release-date";
+      dateSpan.textContent = `Published ${formatDate(release.published_at)}`;
+      topRow.appendChild(dateSpan);
+    }
+
     const refreshBtn = document.createElement("button");
     refreshBtn.className = "ghost-button refresh-btn";
     refreshBtn.textContent = "Refresh";
     refreshBtn.addEventListener("click", () => loadRelease(true));
     topRow.appendChild(refreshBtn);
 
-    // Last updated timestamp
+    topRow.appendChild(createShareButton());
+
     const lastUpdated = document.createElement("span");
     lastUpdated.className = "last-updated";
     lastUpdated.textContent = `Last checked: ${new Date(fetchTime).toLocaleTimeString()}`;
@@ -244,7 +330,6 @@ async function loadRelease(forceRefresh = false) {
       link.title = asset.name;
       linkWrapper.appendChild(link);
 
-      // File size
       if (asset.size) {
         const sizeSpan = document.createElement("span");
         sizeSpan.className = "file-size";
@@ -257,6 +342,17 @@ async function loadRelease(forceRefresh = false) {
       row.appendChild(createQRCode(asset.browser_download_url));
 
       target.appendChild(row);
+
+      // Checksum link
+      if (checksumAsset) {
+        const checksumLink = document.createElement("a");
+        checksumLink.className = "ghost-button";
+        checksumLink.href = checksumAsset.browser_download_url;
+        checksumLink.target = "_blank";
+        checksumLink.rel = "noopener noreferrer";
+        checksumLink.textContent = "Verify checksum";
+        target.appendChild(checksumLink);
+      }
     } else {
       const fallback = document.createElement("p");
       fallback.textContent = "No matching asset found in this release.";
