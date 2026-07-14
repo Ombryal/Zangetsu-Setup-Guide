@@ -11,6 +11,8 @@
     <link rel="dns-prefetch" href="https://api.github.com" />
     <link rel="dns-prefetch" href="https://github.com" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="../assets/app.js"></script>
+    <script defer src="../assets/download.js"></script>
 
     <meta property="og:title" content="TV Setup | Zangetsu" />
     <meta property="og:description" content="Get Zangetsu on your TV – sideload the APK on Android TV, Google TV, Fire TV, and other devices." />
@@ -21,8 +23,6 @@
     <meta name="twitter:title" content="TV Setup | Zangetsu" />
     <meta name="twitter:description" content="Get Zangetsu on your TV – sideload the APK on Android TV, Google TV, Fire TV, and other devices." />
     <meta name="twitter:image" content="https://yourdomain.com/assets/og-image.png" />
-
-    <script defer src="../assets/app.js"></script>
   </head>
   <body data-page="tv">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -33,7 +33,10 @@
         <h1 id="page-title">TV Setup Guide</h1>
         <p class="subtext">Download the TV APK and sideload it on your Android TV, Google TV, Fire TV, or other supported device.</p>
       </div>
-      <a class="ghost-button" href="../">Back to Setup Guide</a>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
+        <a class="ghost-button" href="../">Back to Setup Guide</a>
+      </div>
     </header>
 
     <main id="main-content" class="content" aria-labelledby="page-title">
@@ -75,13 +78,13 @@
       </section>
 
       <section class="panel">
-  <h2>System requirements</h2>
-  <ul>
-    <li>Android TV 6.0 (Marshmallow) or higher</li>
-    <li>Fire TV OS 6+ or Google TV</li>
-    <li>At least 150 MB free storage</li>
-    <li>USB drive or network transfer method</li>
-  </ul>
+        <h2>System requirements</h2>
+        <ul>
+          <li>Android TV 6.0 (Marshmallow) or higher</li>
+          <li>Fire TV OS 6+ or Google TV</li>
+          <li>At least 150 MB free storage</li>
+          <li>USB drive or network transfer method</li>
+        </ul>
       </section>
     </main>
   </body>
