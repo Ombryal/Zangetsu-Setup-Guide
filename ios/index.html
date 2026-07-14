@@ -4,20 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>iOS Setup | Zangetsu</title>
+    <meta name="description" content="Install Zangetsu on iPhone and iPad using the latest IPA or TestFlight build." />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="../assets/styles.css" />
+
+    <meta property="og:title" content="iOS Setup | Zangetsu" />
+    <meta property="og:description" content="Install Zangetsu on iPhone and iPad – available via IPA sideloading or TestFlight." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com/ios/" />
+    <meta property="og:image" content="https://yourdomain.com/assets/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="iOS Setup | Zangetsu" />
+    <meta name="twitter:description" content="Install Zangetsu on iPhone and iPad – available via IPA sideloading or TestFlight." />
+    <meta name="twitter:image" content="https://yourdomain.com/assets/og-image.png" />
+
     <script defer src="../assets/app.js"></script>
   </head>
   <body data-page="ios">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
     <header class="topbar">
       <div>
         <p class="eyebrow">Zangetsu</p>
         <h1>iOS Setup Guide</h1>
-        <p class="subtext">Show the iOS install method you actually support.</p>
+        <p class="subtext">Install Zangetsu on iPhone and iPad using the latest IPA or TestFlight.</p>
       </div>
       <a class="ghost-button" href="../">Back to Setup Guide</a>
     </header>
 
-    <main class="content">
+    <main id="main-content" class="content">
       <section class="panel">
         <h2>Latest download</h2>
         <div id="download-area" class="download-area">
@@ -28,10 +44,13 @@
       <section class="panel">
         <h2>Steps</h2>
         <ol>
-          <li>Follow the official iOS install method for your app.</li>
-          <li>Open the latest build or TestFlight link if available.</li>
-          <li>Approve any required prompts.</li>
-          <li>Launch Zangetsu and complete setup.</li>
+          <li>If a TestFlight link is available, join the beta directly from your iPhone.</li>
+          <li>Otherwise, download the IPA from the link above and sideload it using
+            <a href="https://altstore.io/" target="_blank" rel="noopener noreferrer">AltStore</a>
+            or <a href="https://sideloadly.io/" target="_blank" rel="noopener noreferrer">Sideloadly</a>.
+          </li>
+          <li>Trust the developer certificate in Settings &rarr; General &rarr; Device Management.</li>
+          <li>Open Zangetsu and complete any initial setup.</li>
         </ol>
       </section>
     </main>
