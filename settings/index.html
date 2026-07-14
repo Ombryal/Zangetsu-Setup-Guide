@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="../assets/styles.css" />
     <script defer src="../assets/app.js"></script>
+    <script defer src="../assets/settings.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -54,55 +55,5 @@
     </main>
 
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
-
-    <script>
-      // Because the theme toggle ID differs from the home page, we adapt.
-      document.addEventListener("DOMContentLoaded", () => {
-        // Theme toggle
-        const themeBtn = document.getElementById("theme-toggle-settings");
-        const updateThemeIcon = () => {
-          if (!themeBtn) return;
-          const theme = document.documentElement.getAttribute("data-theme");
-          themeBtn.textContent = theme === "light" ? "☀️" : "🌙";
-        };
-        updateThemeIcon();
-        if (themeBtn) {
-          themeBtn.addEventListener("click", () => {
-            const current = document.documentElement.getAttribute("data-theme");
-            if (current === "light") {
-              document.documentElement.removeAttribute("data-theme");
-              localStorage.setItem("theme", "dark");
-            } else {
-              document.documentElement.setAttribute("data-theme", "light");
-              localStorage.setItem("theme", "light");
-            }
-            updateThemeIcon();
-          });
-        }
-
-        // Language selector (placeholder alert)
-        const langSelect = document.getElementById("language-select");
-        if (langSelect) {
-          langSelect.addEventListener("change", (e) => {
-            if (e.target.value !== "en") {
-              alert("Language support coming soon!");
-              langSelect.value = "en";
-            }
-          });
-        }
-
-        // Clear cache
-        document.getElementById("clear-cache-btn")?.addEventListener("click", () => {
-          sessionStorage.removeItem("latestRelease");
-          alert("Release cache cleared. The next page load will fetch fresh data.");
-        });
-
-        // Reset installation count
-        document.getElementById("reset-install-btn")?.addEventListener("click", () => {
-          localStorage.removeItem("installCount");
-          alert("Installation count reset.");
-        });
-      });
-    </script>
   </body>
 </html>
