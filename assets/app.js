@@ -5,6 +5,13 @@ const CACHE_KEY = "latestRelease";
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 /* ---------- Theme toggling ---------- */
+function updateThemeIcon() {
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  const theme = document.documentElement.getAttribute("data-theme");
+  btn.textContent = theme === "light" ? "☀️" : "🌙";
+}
+
 function initTheme() {
   const saved = localStorage.getItem("theme");
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -13,6 +20,7 @@ function initTheme() {
   } else {
     document.documentElement.removeAttribute("data-theme");
   }
+  updateThemeIcon();
 }
 
 function toggleTheme() {
@@ -24,6 +32,7 @@ function toggleTheme() {
     document.documentElement.setAttribute("data-theme", "light");
     localStorage.setItem("theme", "light");
   }
+  updateThemeIcon();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,6 +52,15 @@ function initBackToTop() {
 }
 
 document.addEventListener("DOMContentLoaded", initBackToTop);
+
+/* ---------- Utility: human-readable file size ---------- */
+function formatBytes(bytes) {
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
 
 /* ---------- Asset detection ---------- */
 function detectAssetName(page, assets) {
@@ -64,20 +82,23 @@ function detectAssetName(page, assets) {
 }
 
 /* ---------- Caching ---------- */
-function getCachedRelease() {
+function getCachedData() {
   try {
     const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
       const data = JSON.parse(cached);
-      if (Date.now() - data.timestamp < CACHE_DURATION) return data.release;
+      if (Date.now() - data.timestamp < CACHE_DURATION) return data;
     }
   } catch (e) { /* ignore */ }
   return null;
 }
 
-function setCachedRelease(release) {
+function setCachedData(release, fetchTime) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ release, timestamp: Date.now() }));
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      release,
+      timestamp: fetchTime || Date.now()
+    }));
   } catch (e) { /* ignore */ }
 }
 
@@ -139,18 +160,37 @@ async function loadRelease(forceRefresh = false) {
 
   try {
     let release;
+    let fetchTime = Date.now();
+
+    // Check cache unless forced refresh
     if (!forceRefresh) {
-      const cached = getCachedRelease();
-      if (cached) release = cached;
+      const cached = getCachedData();
+      if (cached) {
+        release = cached.release;
+        fetchTime = cached.timestamp;
+      }
     }
 
     if (!release) {
       const response = await fetch(API_URL, {
         headers: { Accept: "application/vnd.github+json" },
       });
-      if (!response.ok) throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+
+      if (!response.ok) {
+        if (response.status === 403 && response.headers.get("x-ratelimit-remaining") === "0") {
+          const resetTime = response.headers.get("x-ratelimit-reset");
+          const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null;
+          const message = `GitHub API rate limit exceeded. ${
+            resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."
+          }`;
+          throw new Error(message);
+        }
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      }
+
       release = await response.json();
-      setCachedRelease(release);
+      fetchTime = Date.now();
+      setCachedData(release, fetchTime);
     }
 
     const page = document.body.dataset.page;
@@ -158,11 +198,31 @@ async function loadRelease(forceRefresh = false) {
 
     target.innerHTML = "";
 
-    const version = document.createElement("div");
-    version.className = "badge";
-    version.textContent = release.tag_name || "Latest release";
-    target.appendChild(version);
+    // Top row: badge + refresh + timestamp
+    const topRow = document.createElement("div");
+    topRow.className = "download-top-row";
 
+    const versionBadge = document.createElement("div");
+    versionBadge.className = "badge";
+    versionBadge.textContent = release.tag_name || "Latest release";
+    topRow.appendChild(versionBadge);
+
+    // Manual refresh button
+    const refreshBtn = document.createElement("button");
+    refreshBtn.className = "ghost-button refresh-btn";
+    refreshBtn.textContent = "Refresh";
+    refreshBtn.addEventListener("click", () => loadRelease(true));
+    topRow.appendChild(refreshBtn);
+
+    // Last updated timestamp
+    const lastUpdated = document.createElement("span");
+    lastUpdated.className = "last-updated";
+    lastUpdated.textContent = `Last checked: ${new Date(fetchTime).toLocaleTimeString()}`;
+    topRow.appendChild(lastUpdated);
+
+    target.appendChild(topRow);
+
+    // Release name
     const releaseInfo = document.createElement("p");
     releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
@@ -171,6 +231,9 @@ async function loadRelease(forceRefresh = false) {
       const row = document.createElement("div");
       row.className = "download-row";
 
+      const linkWrapper = document.createElement("div");
+      linkWrapper.className = "download-link-wrapper";
+
       const link = document.createElement("a");
       link.className = "download-button";
       link.href = asset.browser_download_url;
@@ -178,9 +241,18 @@ async function loadRelease(forceRefresh = false) {
       link.rel = "noopener noreferrer";
       link.setAttribute("aria-label", `Download ${asset.name}`);
       link.textContent = `Download ${asset.name}`;
-      link.title = asset.name;   // shows full name on hover
-      row.appendChild(link);
+      link.title = asset.name;
+      linkWrapper.appendChild(link);
 
+      // File size
+      if (asset.size) {
+        const sizeSpan = document.createElement("span");
+        sizeSpan.className = "file-size";
+        sizeSpan.textContent = formatBytes(asset.size);
+        linkWrapper.appendChild(sizeSpan);
+      }
+
+      row.appendChild(linkWrapper);
       row.appendChild(createCopyButton(asset.browser_download_url));
       row.appendChild(createQRCode(asset.browser_download_url));
 
@@ -205,9 +277,7 @@ async function loadRelease(forceRefresh = false) {
   } catch (error) {
     target.innerHTML = "";
     const msg = document.createElement("p");
-    msg.textContent = error.message.startsWith("GitHub API error")
-      ? error.message
-      : "Network error. Check your internet connection.";
+    msg.textContent = error.message;
     target.appendChild(msg);
 
     const retry = document.createElement("button");
