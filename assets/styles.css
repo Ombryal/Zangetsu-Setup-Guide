@@ -175,11 +175,37 @@ button.ghost-button {
 
 .download-area { display: grid; gap: 12px; }
 
+/* Top row with badge, refresh, timestamp */
+.download-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.refresh-btn {
+  font-size: 0.85rem;
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+.last-updated {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 .download-row {
   display: flex;
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.download-link-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
 }
 
 /* Download button with truncation */
@@ -195,6 +221,12 @@ button.ghost-button {
 
 [data-theme="light"] .download-button {
   background: linear-gradient(180deg, rgba(43,108,176,0.15), rgba(43,108,176,0.05));
+}
+
+.file-size {
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding-left: 4px;
 }
 
 .copy-btn {
