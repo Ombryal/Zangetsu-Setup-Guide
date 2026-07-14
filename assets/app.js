@@ -31,9 +31,7 @@ function getCachedRelease() {
         return data.release;
       }
     }
-  } catch (e) {
-    // Ignore parse errors
-  }
+  } catch (e) { /* Ignore */ }
   return null;
 }
 
@@ -43,9 +41,37 @@ function setCachedRelease(release) {
       release,
       timestamp: Date.now()
     }));
-  } catch (e) {
-    // Ignore storage full
-  }
+  } catch (e) { /* Ignore */ }
+}
+
+function createQRCode(url) {
+  const qrContainer = document.createElement("div");
+  qrContainer.className = "qr-code";
+  const qrImg = document.createElement("img");
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
+  qrImg.alt = "QR code for download link";
+  qrImg.loading = "lazy";
+  qrContainer.appendChild(qrImg);
+  const caption = document.createElement("small");
+  caption.textContent = "Scan to download on another device";
+  qrContainer.appendChild(caption);
+  return qrContainer;
+}
+
+function createReleaseNotes(body) {
+  if (!body) return null;
+  const div = document.createElement("div");
+  div.className = "release-notes";
+  const heading = document.createElement("h3");
+  heading.textContent = "What’s new";
+  div.appendChild(heading);
+  // Take first 400 characters, avoid splitting markdown harshly
+  let preview = body.replace(/^#.*$/gm, '').trim().substring(0, 400);
+  if (body.length > 400) preview += '…';
+  const p = document.createElement("p");
+  p.textContent = preview;
+  div.appendChild(p);
+  return div;
 }
 
 async function loadRelease(forceRefresh = false) {
@@ -59,9 +85,7 @@ async function loadRelease(forceRefresh = false) {
     let release;
     if (!forceRefresh) {
       const cached = getCachedRelease();
-      if (cached) {
-        release = cached;
-      }
+      if (cached) release = cached;
     }
 
     if (!release) {
@@ -93,8 +117,11 @@ async function loadRelease(forceRefresh = false) {
     releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
 
-    // Download button if asset found
+    // Download button and QR code row
     if (asset) {
+      const row = document.createElement("div");
+      row.className = "download-row";
+
       const link = document.createElement("a");
       link.className = "download-button";
       link.href = asset.browser_download_url;
@@ -102,20 +129,31 @@ async function loadRelease(forceRefresh = false) {
       link.rel = "noopener noreferrer";
       link.setAttribute("aria-label", `Download ${asset.name}`);
       link.textContent = `Download ${asset.name}`;
-      target.appendChild(link);
+      row.appendChild(link);
+
+      // QR Code
+      row.appendChild(createQRCode(asset.browser_download_url));
+
+      target.appendChild(row);
     } else {
       const fallback = document.createElement("p");
       fallback.textContent = "No matching asset found in this release.";
       target.appendChild(fallback);
     }
 
-    // Always show release notes link
+    // Release notes preview
+    const notesPreview = createReleaseNotes(release.body);
+    if (notesPreview) {
+      target.appendChild(notesPreview);
+    }
+
+    // Always show full release link
     const releaseLink = document.createElement("a");
     releaseLink.className = "ghost-button";
     releaseLink.href = release.html_url;
     releaseLink.target = "_blank";
     releaseLink.rel = "noopener noreferrer";
-    releaseLink.textContent = "View release notes";
+    releaseLink.textContent = "View full release notes";
     target.appendChild(releaseLink);
 
   } catch (error) {
