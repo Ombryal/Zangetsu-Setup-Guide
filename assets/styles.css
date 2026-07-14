@@ -154,6 +154,29 @@ button.ghost-button {
   .download-button:hover { border-color: var(--accent); }
 }
 
+/* Settings icon (gear) */
+.settings-icon {
+  font-size: 1.4rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(17, 26, 43, 0.78);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.settings-icon:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+}
+[data-theme="light"] .settings-icon {
+  background: rgba(255,255,255,0.88);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -366,16 +389,6 @@ button.ghost-button {
   flex-wrap: wrap;
   margin-top: 0.5rem;
 }
-
-/* Changelog page */
-.release-entry {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 1rem;
-}
-.release-entry:last-child { border-bottom: none; padding-bottom: 0; }
-.release-entry h2 { font-size: 1.4rem; margin: 0; }
-.release-entry small { color: var(--muted); display: block; margin: 0.25rem 0 0.75rem; }
-.release-body { color: var(--muted); line-height: 1.7; }
 
 @media (max-width: 760px) {
   .topbar { flex-direction: column; }
