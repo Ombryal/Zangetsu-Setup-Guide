@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings | Zangetsu</title>
+    <meta name="description" content="Customise your Zangetsu setup guide experience." />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="../assets/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Zangetsu</p>
+        <h1 id="page-title">Settings</h1>
+        <p class="subtext">Manage your preferences and local data.</p>
+      </div>
+      <a class="ghost-button" href="../">← Back to Setup Guide</a>
+    </header>
+
+    <main id="main-content" class="content" aria-labelledby="page-title">
+      <section class="panel">
+        <h2>Appearance</h2>
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <label for="theme-toggle-settings">Dark / Light mode</label>
+          <button id="theme-toggle-settings" class="ghost-button" aria-label="Toggle dark/light mode">🌓</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Language</h2>
+        <p style="color: var(--muted);">Full translation coming soon.</p>
+        <select id="language-select" class="language-select" aria-label="Select language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="ja">日本語</option>
+        </select>
+      </section>
+
+      <section class="panel">
+        <h2>Data</h2>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <button id="clear-cache-btn" class="ghost-button">Clear release cache</button>
+          <button id="reset-install-btn" class="ghost-button">Reset installation count</button>
+          <p style="font-size: 0.85rem; color: var(--muted);">Clearing the cache will force a fresh check on your next visit.</p>
+        </div>
+      </section>
+    </main>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
+
+    <script>
+      // Because the theme toggle ID differs from the home page, we adapt.
+      document.addEventListener("DOMContentLoaded", () => {
+        // Theme toggle
+        const themeBtn = document.getElementById("theme-toggle-settings");
+        const updateThemeIcon = () => {
+          if (!themeBtn) return;
+          const theme = document.documentElement.getAttribute("data-theme");
+          themeBtn.textContent = theme === "light" ? "☀️" : "🌙";
+        };
+        updateThemeIcon();
+        if (themeBtn) {
+          themeBtn.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-theme");
+            if (current === "light") {
+              document.documentElement.removeAttribute("data-theme");
+              localStorage.setItem("theme", "dark");
+            } else {
+              document.documentElement.setAttribute("data-theme", "light");
+              localStorage.setItem("theme", "light");
+            }
+            updateThemeIcon();
+          });
+        }
+
+        // Language selector (placeholder alert)
+        const langSelect = document.getElementById("language-select");
+        if (langSelect) {
+          langSelect.addEventListener("change", (e) => {
+            if (e.target.value !== "en") {
+              alert("Language support coming soon!");
+              langSelect.value = "en";
+            }
+          });
+        }
+
+        // Clear cache
+        document.getElementById("clear-cache-btn")?.addEventListener("click", () => {
+          sessionStorage.removeItem("latestRelease");
+          alert("Release cache cleared. The next page load will fetch fresh data.");
+        });
+
+        // Reset installation count
+        document.getElementById("reset-install-btn")?.addEventListener("click", () => {
+          localStorage.removeItem("installCount");
+          alert("Installation count reset.");
+        });
+      });
+    </script>
+  </body>
+</html>
