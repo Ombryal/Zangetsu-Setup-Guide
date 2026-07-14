@@ -11,6 +11,8 @@
     <link rel="dns-prefetch" href="https://api.github.com" />
     <link rel="dns-prefetch" href="https://github.com" />
     <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="../assets/app.js"></script>
+    <script defer src="../assets/download.js"></script>
 
     <meta property="og:title" content="iOS Setup | Zangetsu" />
     <meta property="og:description" content="Install Zangetsu on iPhone and iPad – available via IPA sideloading or TestFlight." />
@@ -21,8 +23,6 @@
     <meta name="twitter:title" content="iOS Setup | Zangetsu" />
     <meta name="twitter:description" content="Install Zangetsu on iPhone and iPad – available via IPA sideloading or TestFlight." />
     <meta name="twitter:image" content="https://yourdomain.com/assets/og-image.png" />
-
-    <script defer src="../assets/app.js"></script>
   </head>
   <body data-page="ios">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -33,7 +33,10 @@
         <h1 id="page-title">iOS Setup Guide</h1>
         <p class="subtext">Install Zangetsu on iPhone and iPad using the latest IPA or TestFlight.</p>
       </div>
-      <a class="ghost-button" href="../">Back to Setup Guide</a>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
+        <a class="ghost-button" href="../">Back to Setup Guide</a>
+      </div>
     </header>
 
     <main id="main-content" class="content" aria-labelledby="page-title">
@@ -64,12 +67,12 @@
       </section>
 
       <section class="panel">
-  <h2>System requirements</h2>
-  <ul>
-    <li>iOS 12.0 or later (iPhone / iPad)</li>
-    <li>At least 150 MB free storage</li>
-    <li>Wi‑Fi or cellular data for sideloading / TestFlight</li>
-  </ul>
+        <h2>System requirements</h2>
+        <ul>
+          <li>iOS 12.0 or later (iPhone / iPad)</li>
+          <li>At least 150 MB free storage</li>
+          <li>Wi‑Fi or cellular data for sideloading / TestFlight</li>
+        </ul>
       </section>
     </main>
   </body>
