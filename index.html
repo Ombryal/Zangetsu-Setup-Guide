@@ -7,6 +7,9 @@
     <meta name="description" content="Choose your platform and install Zangetsu on Android, iOS, TV, or Windows. Simple step‑by‑step guides." />
     <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
+    <link rel="canonical" href="https://yourdomain.com/" />
+    <link rel="dns-prefetch" href="https://api.github.com" />
+    <link rel="dns-prefetch" href="https://github.com" />
     <link rel="stylesheet" href="./assets/styles.css" />
     <script defer src="./assets/app.js"></script>
 
@@ -26,7 +29,7 @@
     <header class="topbar">
       <div>
         <p class="eyebrow">Zangetsu</p>
-        <h1>Setup Guide</h1>
+        <h1 id="page-title">Setup Guide</h1>
         <p class="subtext">Choose your platform to see the correct install instructions.</p>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
@@ -37,7 +40,7 @@
       </div>
     </header>
 
-    <main id="main-content" class="grid">
+    <main id="main-content" class="grid" aria-labelledby="page-title">
       <a class="card" href="./android/">
         <h2>Android</h2>
         <p>Install Zangetsu on Android phones and tablets.</p>
