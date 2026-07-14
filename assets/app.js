@@ -1,80 +1,139 @@
 const OWNER = "Spyou";
 const REPO = "Zangetsu";
 const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
+const CACHE_KEY = "latestRelease";
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
 function detectAssetName(page, assets) {
-  const rules = {
-    android: ["android", ".apk"],
-    tv: ["tv", ".apk"],
-    ios: ["ios", ".ipa"],
-    windows: ["windows", ".exe", ".msi", ".zip"],
+  const patterns = {
+    android: { platform: 'android', extensions: ['.apk'] },
+    tv:      { platform: 'tv',      extensions: ['.apk'] },
+    ios:     { platform: 'ios',     extensions: ['.ipa'] },
+    windows: { platform: 'windows', extensions: ['.exe', '.msi', '.zip'] },
   };
+  const rule = patterns[page];
+  if (!rule) return undefined;
 
-  const keywords = rules[page] || [];
-  return assets.find((asset) => {
+  return assets.find(asset => {
     const name = asset.name.toLowerCase();
-    return keywords.every((keyword) =>
-      name.includes(keyword.replace(".", "")) || name.endsWith(keyword)
-    );
+    const matchesPlatform = name.includes(rule.platform);
+    const matchesExt = rule.extensions.some(ext => name.endsWith(ext));
+    return matchesPlatform && matchesExt;
   });
 }
 
-async function loadRelease() {
+function getCachedRelease() {
+  try {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      if (Date.now() - data.timestamp < CACHE_DURATION) {
+        return data.release;
+      }
+    }
+  } catch (e) {
+    // Ignore parse errors
+  }
+  return null;
+}
+
+function setCachedRelease(release) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      release,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    // Ignore storage full
+  }
+}
+
+async function loadRelease(forceRefresh = false) {
   const target = document.getElementById("download-area");
   if (!target) return;
 
-  try {
-    const response = await fetch(API_URL, {
-      headers: {
-        Accept: "application/vnd.github+json",
-      },
-    });
+  // Loading state
+  target.innerHTML = '<div class="loading-spinner"><span>Loading release data…</span></div>';
 
-    if (!response.ok) {
-      throw new Error(`GitHub API returned ${response.status}`);
+  try {
+    let release;
+    if (!forceRefresh) {
+      const cached = getCachedRelease();
+      if (cached) {
+        release = cached;
+      }
     }
 
-    const release = await response.json();
+    if (!release) {
+      const response = await fetch(API_URL, {
+        headers: { Accept: "application/vnd.github+json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      }
+
+      release = await response.json();
+      setCachedRelease(release);
+    }
+
     const page = document.body.dataset.page;
     const asset = detectAssetName(page, release.assets || []);
 
     target.innerHTML = "";
 
+    // Version badge
     const version = document.createElement("div");
     version.className = "badge";
     version.textContent = release.tag_name || "Latest release";
     target.appendChild(version);
 
+    // Release name
     const releaseInfo = document.createElement("p");
-    releaseInfo.textContent = release.name ? release.name : "Latest GitHub release found.";
+    releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
 
+    // Download button if asset found
     if (asset) {
       const link = document.createElement("a");
       link.className = "download-button";
       link.href = asset.browser_download_url;
       link.target = "_blank";
-      link.rel = "noreferrer";
+      link.rel = "noopener noreferrer";
+      link.setAttribute("aria-label", `Download ${asset.name}`);
       link.textContent = `Download ${asset.name}`;
       target.appendChild(link);
     } else {
       const fallback = document.createElement("p");
-      fallback.textContent = "No matching asset was found in the latest release.";
+      fallback.textContent = "No matching asset found in this release.";
       target.appendChild(fallback);
     }
 
-    const notes = document.createElement("a");
-    notes.className = "ghost-button";
-    notes.href = release.html_url;
-    notes.target = "_blank";
-    notes.rel = "noreferrer";
-    notes.textContent = "View release notes";
-    target.appendChild(notes);
+    // Always show release notes link
+    const releaseLink = document.createElement("a");
+    releaseLink.className = "ghost-button";
+    releaseLink.href = release.html_url;
+    releaseLink.target = "_blank";
+    releaseLink.rel = "noopener noreferrer";
+    releaseLink.textContent = "View release notes";
+    target.appendChild(releaseLink);
+
   } catch (error) {
     target.innerHTML = "";
-    const msg = document.createElement("p");
-    msg.textContent = `Could not load GitHub release data: ${error.message}`;
-    target.appendChild(msg);
+    const errorMsg = document.createElement("p");
+    if (error.message.startsWith("GitHub API error")) {
+      errorMsg.textContent = error.message;
+    } else {
+      errorMsg.textContent = "Network error. Check your internet connection.";
+    }
+    target.appendChild(errorMsg);
+
+    const retryBtn = document.createElement("button");
+    retryBtn.className = "ghost-button";
+    retryBtn.textContent = "Retry";
+    retryBtn.addEventListener("click", () => loadRelease(true));
+    target.appendChild(retryBtn);
+
     console.error(error);
   }
 }
