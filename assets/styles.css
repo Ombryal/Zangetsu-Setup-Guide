@@ -180,10 +180,64 @@ button.ghost-button {
   gap: 12px;
 }
 
+/* Download button + QR row */
+.download-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .download-button {
   width: fit-content;
   gap: 10px;
   background: linear-gradient(180deg, rgba(110, 168, 254, 0.2), rgba(110, 168, 254, 0.1));
+}
+
+/* QR code */
+.qr-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.qr-code img {
+  display: block;
+  width: 120px;
+  height: 120px;
+}
+
+.qr-code small {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Release notes preview */
+.release-notes {
+  margin-top: 8px;
+  padding: 12px;
+  background: rgba(110, 168, 254, 0.07);
+  border-radius: 14px;
+  border: 1px solid rgba(110, 168, 254, 0.15);
+}
+
+.release-notes h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  color: var(--accent);
+}
+
+.release-notes p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: pre-wrap;
+  line-height: 1.6;
 }
 
 /* Loading spinner */
@@ -229,5 +283,14 @@ button.ghost-button {
 
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .download-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .qr-code {
+    align-self: flex-start;
   }
 }
