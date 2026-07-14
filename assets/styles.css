@@ -35,6 +35,30 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 16px;
+  background: var(--accent);
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  z-index: 1000;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
 .topbar,
 .content,
 .grid {
