@@ -158,13 +158,11 @@ async function loadRelease(forceRefresh = false) {
 
     target.innerHTML = "";
 
-    // Badge
     const version = document.createElement("div");
     version.className = "badge";
     version.textContent = release.tag_name || "Latest release";
     target.appendChild(version);
 
-    // Name
     const releaseInfo = document.createElement("p");
     releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
@@ -180,12 +178,10 @@ async function loadRelease(forceRefresh = false) {
       link.rel = "noopener noreferrer";
       link.setAttribute("aria-label", `Download ${asset.name}`);
       link.textContent = `Download ${asset.name}`;
+      link.title = asset.name;   // shows full name on hover
       row.appendChild(link);
 
-      // Copy link button
       row.appendChild(createCopyButton(asset.browser_download_url));
-
-      // QR Code
       row.appendChild(createQRCode(asset.browser_download_url));
 
       target.appendChild(row);
