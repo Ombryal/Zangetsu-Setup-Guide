@@ -1,5 +1,5 @@
 const OWNER = "Spyou";
-const REPO = "https://github.com/Spyou/Zangetsu";
+const REPO = "Zangetsu";
 const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
 
 function detectAssetName(page, assets) {
@@ -13,7 +13,9 @@ function detectAssetName(page, assets) {
   const keywords = rules[page] || [];
   return assets.find((asset) => {
     const name = asset.name.toLowerCase();
-    return keywords.every((keyword) => name.includes(keyword.replace(".", "")) || name.endsWith(keyword));
+    return keywords.every((keyword) =>
+      name.includes(keyword.replace(".", "")) || name.endsWith(keyword)
+    );
   });
 }
 
@@ -71,8 +73,9 @@ async function loadRelease() {
   } catch (error) {
     target.innerHTML = "";
     const msg = document.createElement("p");
-    msg.textContent = "Could not load GitHub release data.";
+    msg.textContent = `Could not load GitHub release data: ${error.message}`;
     target.appendChild(msg);
+    console.error(error);
   }
 }
 
