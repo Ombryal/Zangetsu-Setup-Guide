@@ -4,6 +4,47 @@ const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
 const CACHE_KEY = "latestRelease";
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
+/* ---------- Theme toggling ---------- */
+function initTheme() {
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (saved === "light" || (!saved && !prefersDark)) {
+    document.documentElement.setAttribute("data-theme", "light");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme");
+  if (current === "light") {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  const toggleBtn = document.getElementById("theme-toggle");
+  if (toggleBtn) toggleBtn.addEventListener("click", toggleTheme);
+});
+
+/* ---------- Back to top button ---------- */
+function initBackToTop() {
+  const btn = document.getElementById("back-to-top");
+  if (!btn) return;
+  window.addEventListener("scroll", () => {
+    btn.style.display = window.scrollY > 300 ? "flex" : "none";
+  });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+}
+
+document.addEventListener("DOMContentLoaded", initBackToTop);
+
+/* ---------- Asset detection ---------- */
 function detectAssetName(page, assets) {
   const patterns = {
     android: { platform: 'android', extensions: ['.apk'] },
@@ -22,28 +63,25 @@ function detectAssetName(page, assets) {
   });
 }
 
+/* ---------- Caching ---------- */
 function getCachedRelease() {
   try {
     const cached = sessionStorage.getItem(CACHE_KEY);
     if (cached) {
       const data = JSON.parse(cached);
-      if (Date.now() - data.timestamp < CACHE_DURATION) {
-        return data.release;
-      }
+      if (Date.now() - data.timestamp < CACHE_DURATION) return data.release;
     }
-  } catch (e) { /* Ignore */ }
+  } catch (e) { /* ignore */ }
   return null;
 }
 
 function setCachedRelease(release) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
-      release,
-      timestamp: Date.now()
-    }));
-  } catch (e) { /* Ignore */ }
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ release, timestamp: Date.now() }));
+  } catch (e) { /* ignore */ }
 }
 
+/* ---------- QR code ---------- */
 function createQRCode(url) {
   const qrContainer = document.createElement("div");
   qrContainer.className = "qr-code";
@@ -53,11 +91,30 @@ function createQRCode(url) {
   qrImg.loading = "lazy";
   qrContainer.appendChild(qrImg);
   const caption = document.createElement("small");
-  caption.textContent = "Scan to download on another device";
+  caption.textContent = "Scan to download";
   qrContainer.appendChild(caption);
   return qrContainer;
 }
 
+/* ---------- Copy link button ---------- */
+function createCopyButton(url) {
+  const btn = document.createElement("button");
+  btn.className = "ghost-button copy-btn";
+  btn.textContent = "Copy link";
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = "Copied!";
+      setTimeout(() => (btn.textContent = "Copy link"), 2000);
+    } catch {
+      btn.textContent = "Failed";
+      setTimeout(() => (btn.textContent = "Copy link"), 2000);
+    }
+  });
+  return btn;
+}
+
+/* ---------- Release notes preview ---------- */
 function createReleaseNotes(body) {
   if (!body) return null;
   const div = document.createElement("div");
@@ -65,7 +122,6 @@ function createReleaseNotes(body) {
   const heading = document.createElement("h3");
   heading.textContent = "What’s new";
   div.appendChild(heading);
-  // Take first 400 characters, avoid splitting markdown harshly
   let preview = body.replace(/^#.*$/gm, '').trim().substring(0, 400);
   if (body.length > 400) preview += '…';
   const p = document.createElement("p");
@@ -74,11 +130,11 @@ function createReleaseNotes(body) {
   return div;
 }
 
+/* ---------- Main loader ---------- */
 async function loadRelease(forceRefresh = false) {
   const target = document.getElementById("download-area");
   if (!target) return;
 
-  // Loading state
   target.innerHTML = '<div class="loading-spinner"><span>Loading release data…</span></div>';
 
   try {
@@ -92,11 +148,7 @@ async function loadRelease(forceRefresh = false) {
       const response = await fetch(API_URL, {
         headers: { Accept: "application/vnd.github+json" },
       });
-
-      if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-      }
-
+      if (!response.ok) throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
       release = await response.json();
       setCachedRelease(release);
     }
@@ -106,18 +158,17 @@ async function loadRelease(forceRefresh = false) {
 
     target.innerHTML = "";
 
-    // Version badge
+    // Badge
     const version = document.createElement("div");
     version.className = "badge";
     version.textContent = release.tag_name || "Latest release";
     target.appendChild(version);
 
-    // Release name
+    // Name
     const releaseInfo = document.createElement("p");
     releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
 
-    // Download button and QR code row
     if (asset) {
       const row = document.createElement("div");
       row.className = "download-row";
@@ -131,6 +182,9 @@ async function loadRelease(forceRefresh = false) {
       link.textContent = `Download ${asset.name}`;
       row.appendChild(link);
 
+      // Copy link button
+      row.appendChild(createCopyButton(asset.browser_download_url));
+
       // QR Code
       row.appendChild(createQRCode(asset.browser_download_url));
 
@@ -141,13 +195,9 @@ async function loadRelease(forceRefresh = false) {
       target.appendChild(fallback);
     }
 
-    // Release notes preview
     const notesPreview = createReleaseNotes(release.body);
-    if (notesPreview) {
-      target.appendChild(notesPreview);
-    }
+    if (notesPreview) target.appendChild(notesPreview);
 
-    // Always show full release link
     const releaseLink = document.createElement("a");
     releaseLink.className = "ghost-button";
     releaseLink.href = release.html_url;
@@ -158,20 +208,17 @@ async function loadRelease(forceRefresh = false) {
 
   } catch (error) {
     target.innerHTML = "";
-    const errorMsg = document.createElement("p");
-    if (error.message.startsWith("GitHub API error")) {
-      errorMsg.textContent = error.message;
-    } else {
-      errorMsg.textContent = "Network error. Check your internet connection.";
-    }
-    target.appendChild(errorMsg);
+    const msg = document.createElement("p");
+    msg.textContent = error.message.startsWith("GitHub API error")
+      ? error.message
+      : "Network error. Check your internet connection.";
+    target.appendChild(msg);
 
-    const retryBtn = document.createElement("button");
-    retryBtn.className = "ghost-button";
-    retryBtn.textContent = "Retry";
-    retryBtn.addEventListener("click", () => loadRelease(true));
-    target.appendChild(retryBtn);
-
+    const retry = document.createElement("button");
+    retry.className = "ghost-button";
+    retry.textContent = "Retry";
+    retry.addEventListener("click", () => loadRelease(true));
+    target.appendChild(retry);
     console.error(error);
   }
 }
