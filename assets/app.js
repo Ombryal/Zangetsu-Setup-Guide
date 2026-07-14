@@ -4,6 +4,13 @@ const API_URL = `https://api.github.com/repos/${OWNER}/${REPO}/releases/latest`;
 const CACHE_KEY = "latestRelease";
 const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
 
+/* ---------- Service Worker ---------- */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/assets/sw.js").catch(() => {});
+  });
+}
+
 /* ---------- Theme toggling ---------- */
 function updateThemeIcon() {
   const btn = document.getElementById("theme-toggle");
@@ -48,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     langSelect.addEventListener("change", (e) => {
       if (e.target.value !== "en") {
         alert("Language support coming soon!");
-        langSelect.value = "en"; // reset to English
+        langSelect.value = "en";
       }
     });
   }
@@ -66,12 +73,8 @@ async function fetchStarCount() {
       const data = await response.json();
       const count = data.stargazers_count;
       starLink.innerHTML = `★ Star <span class="star-count">${count}</span>`;
-    } else {
-      // Keep default text on error
     }
-  } catch {
-    // Silently fail, leave default text
-  }
+  } catch {}
 }
 document.addEventListener("DOMContentLoaded", fetchStarCount);
 
@@ -84,7 +87,6 @@ function initBackToTop() {
   });
   btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
-
 document.addEventListener("DOMContentLoaded", initBackToTop);
 
 /* ---------- Utility: human-readable file size ---------- */
@@ -134,17 +136,14 @@ function getCachedData() {
       const data = JSON.parse(cached);
       if (Date.now() - data.timestamp < CACHE_DURATION) return data;
     }
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
   return null;
 }
 
 function setCachedData(release, fetchTime) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
-      release,
-      timestamp: fetchTime || Date.now()
-    }));
-  } catch (e) { /* ignore */ }
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({ release, timestamp: fetchTime || Date.now() }));
+  } catch (e) {}
 }
 
 /* ---------- QR code ---------- */
@@ -222,10 +221,7 @@ function initInstallFeedback() {
 
   const feedbackDiv = document.createElement("section");
   feedbackDiv.className = "panel install-feedback";
-  feedbackDiv.innerHTML = `
-    <h2>Installation</h2>
-    <p>Let us know you’ve installed Zangetsu!</p>
-  `;
+  feedbackDiv.innerHTML = `<h2>Installation</h2><p>Let us know you’ve installed Zangetsu!</p>`;
   const btn = document.createElement("button");
   btn.className = "ghost-button install-btn";
   btn.textContent = "I installed Zangetsu";
@@ -242,7 +238,6 @@ function initInstallFeedback() {
   feedbackDiv.appendChild(btn);
   main.appendChild(feedbackDiv);
 }
-
 document.addEventListener("DOMContentLoaded", initInstallFeedback);
 
 /* ---------- Keyboard shortcut: R to refresh ---------- */
@@ -284,11 +279,7 @@ async function loadRelease(forceRefresh = false) {
         if (response.status === 403 && response.headers.get("x-ratelimit-remaining") === "0") {
           const resetTime = response.headers.get("x-ratelimit-reset");
           const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null;
-          throw new Error(
-            `GitHub API rate limit exceeded. ${
-              resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."
-            }`
-          );
+          throw new Error(`GitHub API rate limit exceeded. ${resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."}`);
         }
         throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
       }
@@ -300,13 +291,7 @@ async function loadRelease(forceRefresh = false) {
 
     const page = document.body.dataset.page;
     const asset = detectAssetName(page, release.assets || []);
-
-    // Checksum file lookup
-    const checksumAsset = release.assets?.find(a =>
-      a.name.toLowerCase().includes("checksum") ||
-      a.name.toLowerCase().includes("sha256") ||
-      a.name.toLowerCase().endsWith(".sha256")
-    );
+    const checksumAsset = release.assets?.find(a => a.name.toLowerCase().includes("checksum") || a.name.toLowerCase().includes("sha256") || a.name.toLowerCase().endsWith(".sha256"));
 
     target.innerHTML = "";
 
@@ -376,11 +361,9 @@ async function loadRelease(forceRefresh = false) {
 
       target.appendChild(row);
 
-      // Checksum actions
       if (checksumAsset) {
         const checksumRow = document.createElement("div");
         checksumRow.className = "checksum-row";
-
         const checksumLink = document.createElement("a");
         checksumLink.className = "ghost-button";
         checksumLink.href = checksumAsset.browser_download_url;
@@ -389,7 +372,6 @@ async function loadRelease(forceRefresh = false) {
         checksumLink.textContent = "Verify checksum";
         checksumRow.appendChild(checksumLink);
 
-        // Copy checksum URL button
         const copyChecksumBtn = document.createElement("button");
         copyChecksumBtn.className = "ghost-button copy-btn";
         copyChecksumBtn.textContent = "Copy checksum URL";
@@ -404,7 +386,6 @@ async function loadRelease(forceRefresh = false) {
           }
         });
         checksumRow.appendChild(copyChecksumBtn);
-
         target.appendChild(checksumRow);
       }
     } else {
