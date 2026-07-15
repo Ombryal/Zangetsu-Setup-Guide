@@ -1,7 +1,7 @@
 :root {
   --bg: #0b1220;
   --panel: #111a2b;
-  --panel-rgb: 17, 26, 43;   /* for rgba() usage */
+  --panel-rgb: 17, 26, 43;
   --panel-2: #0f1726;
   --text: #e7eefc;
   --muted: #9db0d0;
@@ -47,7 +47,6 @@ body {
   background: radial-gradient(circle at top, #e0eaff 0%, var(--bg) 45%);
 }
 
-/* Fade-in animation for main content */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -156,7 +155,6 @@ button.ghost-button {
   .download-button:hover { border-color: var(--accent); }
 }
 
-/* Settings icon (gear) */
 .settings-icon {
   font-size: 1.4rem;
   text-decoration: none;
@@ -221,6 +219,107 @@ button.ghost-button {
 
 .panel { padding: 1.5rem; }
 
+/* ---------- Tabs ---------- */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  font-family: inherit;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(110,168,254,0.05);
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: rgba(110,168,254,0.1);
+}
+
+/* Method content area */
+.method-content {
+  min-height: 8rem;
+  transition: opacity 0.25s ease;
+}
+
+.method-content ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.method-content li {
+  margin-bottom: 0.5rem;
+}
+
+.method-note {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* The method download button area */
+#method-download-area {
+  margin-top: 1rem;
+}
+
+/* ---------- Release notes with blurred fade ---------- */
+.release-notes {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(110,168,254,0.07);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(110,168,254,0.15);
+  overflow: hidden;
+}
+
+.release-notes h3 {
+  margin: 0 0 0.375rem;
+  font-size: 0.95rem;
+  color: var(--accent);
+}
+
+.release-preview-text {
+  position: relative;
+  max-height: 6em;
+  overflow: hidden;
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.release-preview-text::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.5em;
+  background: linear-gradient(transparent, rgba(var(--panel-rgb), 0.85));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* download area stuff... */
 .download-area { display: grid; gap: 0.75rem; }
 
 .download-top-row {
@@ -281,50 +380,6 @@ button.ghost-button {
 
 .qr-code img { display: block; width: 7.5rem; height: 7.5rem; }
 .qr-code small { font-size: 0.75rem; color: var(--muted); }
-
-/* ---------- Release notes with blurred fade ---------- */
-.release-notes {
-  margin-top: 0.5rem;
-  padding: 0.75rem;
-  background: rgba(110,168,254,0.07);
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(110,168,254,0.15);
-  overflow: hidden;
-}
-
-.release-notes h3 {
-  margin: 0 0 0.375rem;
-  font-size: 0.95rem;
-  color: var(--accent);
-}
-
-/* The text container – clipped and with a blur overlay */
-.release-preview-text {
-  position: relative;
-  max-height: 6em;        /* limit visible lines */
-  overflow: hidden;
-  font-size: 0.9rem;
-  color: var(--muted);
-  white-space: pre-wrap;
-  line-height: 1.6;
-}
-
-/* Blurred fade overlay at the bottom */
-.release-preview-text::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2.5em;
-  background: linear-gradient(transparent, rgba(var(--panel-rgb), 0.85));
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  pointer-events: none;
-}
-
-/* Override the old p styles inside release notes */
-.release-notes p { margin: 0; }  /* keep the “View full release notes” link clean */
 
 .loading-spinner {
   display: flex;
@@ -430,4 +485,5 @@ button.ghost-button {
   .grid { grid-template-columns: 1fr; }
   .download-row { flex-direction: column; align-items: stretch; }
   .qr-code { align-self: flex-start; }
+  .tabs { flex-wrap: wrap; }
 }
