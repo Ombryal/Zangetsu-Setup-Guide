@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Windows Setup | Zangetsu</title>
-    <meta name="description" content="Download and install Zangetsu on Windows – choose the latest installer or portable build from GitHub." />
+    <meta name="description" content="Download and install Zangetsu on Windows – choose your preferred installer format: MSI, ZIP, or EXE." />
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
     <link rel="canonical" href="https://yourdomain.com/windows/" />
@@ -15,13 +15,13 @@
     <script defer src="../assets/download.js"></script>
 
     <meta property="og:title" content="Windows Setup | Zangetsu" />
-    <meta property="og:description" content="Install Zangetsu on your Windows desktop or laptop – grab the latest exe or portable zip from GitHub." />
+    <meta property="og:description" content="Install Zangetsu on your Windows desktop or laptop – grab the latest exe, msi, or zip from GitHub." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://yourdomain.com/windows/" />
     <meta property="og:image" content="https://yourdomain.com/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Windows Setup | Zangetsu" />
-    <meta name="twitter:description" content="Install Zangetsu on your Windows desktop or laptop – grab the latest exe or portable zip from GitHub." />
+    <meta name="twitter:description" content="Install Zangetsu on your Windows desktop or laptop – grab the latest exe, msi, or zip from GitHub." />
     <meta name="twitter:image" content="https://yourdomain.com/assets/og-image.png" />
   </head>
   <body data-page="windows">
@@ -40,6 +40,7 @@
     </header>
 
     <main id="main-content" class="content" aria-labelledby="page-title">
+      <!-- Automatic latest download (untouched) -->
       <section class="panel">
         <h2>Latest download</h2>
         <div id="download-area" class="download-area">
@@ -53,17 +54,34 @@
         </div>
       </section>
 
+      <!-- Installation method tabs -->
       <section class="panel">
-        <h2>Steps</h2>
-        <ol>
-          <li>Click the download button above – it will fetch the latest <code>.exe</code> installer or <code>.zip</code> portable build.</li>
-          <li>If you downloaded an installer, run it and follow the setup wizard.</li>
-          <li>If you got a portable zip, extract it to a folder of your choice and run <code>Zangetsu.exe</code>.</li>
-          <li>Windows Defender may show a warning – that’s expected for unsigned apps; click “More info” then “Run anyway”.</li>
-          <li>Launch Zangetsu and complete any initial configuration.</li>
-        </ol>
+        <h2>Choose installation method</h2>
+        <p>Pick the file type you prefer. The instructions and download link update automatically.</p>
+
+        <div class="tabs" role="tablist">
+          <button class="tab-btn active" role="tab" data-method="msi" aria-selected="true">.msi</button>
+          <button class="tab-btn" role="tab" data-method="zip" aria-selected="false">.zip</button>
+          <button class="tab-btn" role="tab" data-method="exe" aria-selected="false">.exe</button>
+        </div>
+
+        <!-- Method content will be injected here -->
+        <div id="method-content" class="method-content" style="transition: opacity 0.25s ease;">
+          <!-- filled by JS -->
+        </div>
       </section>
 
+      <!-- Important notes (shared) -->
+      <section class="panel">
+        <h2>Important notes</h2>
+        <ul>
+          <li>Make sure you download the correct version for Windows (64‑bit).</li>
+          <li>If Windows shows a security warning, choose “Run anyway” only if you trust the official Zangetsu source.</li>
+          <li>If one file type does not work, try another one from the tabs above.</li>
+        </ul>
+      </section>
+
+      <!-- System requirements -->
       <section class="panel">
         <h2>System requirements</h2>
         <ul>
@@ -74,5 +92,130 @@
         </ul>
       </section>
     </main>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
+
+    <!-- Inline script for tab switching and dynamic content -->
+    <script>
+      (function() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contentDiv = document.getElementById('method-content');
+        let activeMethod = 'msi'; // default
+
+        // Method details
+        const methodInfo = {
+          msi: {
+            title: 'Installer (.msi)',
+            description: 'Best for most users. A standard Windows installer package.',
+            steps: [
+              'Download the <strong>.msi</strong> installer.',
+              'Double‑click the file to start setup.',
+              'Follow the installation prompts.',
+              'Open Zangetsu from the Start Menu or desktop shortcut.'
+            ],
+            notes: 'If you’re unsure which format to pick, the MSI is the recommended choice.'
+          },
+          zip: {
+            title: 'Portable (.zip)',
+            description: 'No installation required – just extract and run.',
+            steps: [
+              'Download the <strong>.zip</strong> file.',
+              'Extract it to a folder of your choice.',
+              'Open the extracted folder.',
+              'Run <strong>Zangetsu.exe</strong> inside.'
+            ],
+            notes: 'The portable version does not create Start Menu entries. You can run it from any folder or USB drive.'
+          },
+          exe: {
+            title: 'Setup (.exe)',
+            description: 'Standard Windows executable installer.',
+            steps: [
+              'Download the <strong>.exe</strong> file.',
+              'Double‑click to launch the installer.',
+              'Follow the setup steps.',
+              'Open Zangetsu after installation completes.'
+            ],
+            notes: 'The EXE installer may trigger a Windows Defender SmartScreen warning – that’s normal for unsigned apps. Click “More info” then “Run anyway”.'
+          }
+        };
+
+        // Update content based on selected method
+        function updateContent(method) {
+          if (!methodInfo[method]) return;
+          const info = methodInfo[method];
+          let html = `<h3>${info.title}</h3>`;
+          html += `<p>${info.description}</p>`;
+          html += '<ol>';
+          info.steps.forEach(step => { html += `<li>${step}</li>`; });
+          html += '</ol>';
+          if (info.notes) {
+            html += `<p class="method-note">${info.notes}</p>`;
+          }
+          // Download button placeholder – will be filled by asset link
+          html += `<div id="method-download-area"><p>Loading download link…</p></div>`;
+          contentDiv.style.opacity = '0';
+          setTimeout(() => {
+            contentDiv.innerHTML = html;
+            contentDiv.style.opacity = '1';
+            // Try to set the download link using latest assets
+            setMethodDownloadLink(method);
+          }, 150);
+        }
+
+        // Set the download button for the current method
+        function setMethodDownloadLink(method) {
+          const btnArea = document.getElementById('method-download-area');
+          if (!btnArea) return;
+
+          function createLink(asset) {
+            if (asset) {
+              const sizeMB = (asset.size / 1024 / 1024).toFixed(1);
+              btnArea.innerHTML = `<a class="download-button" href="${asset.browser_download_url}" target="_blank" rel="noopener noreferrer" title="${asset.name}">Download .${method} (${sizeMB} MB)</a>`;
+            } else {
+              btnArea.innerHTML = `<p style="color:var(--muted);">No .${method} asset found in the latest release.</p>`;
+            }
+          }
+
+          // If assets already loaded, use them
+          if (window.__latestAssets && window.__latestAssets.length > 0) {
+            const asset = window.__latestAssets.find(a => a.name.toLowerCase().endsWith(`.${method}`));
+            createLink(asset);
+          } else {
+            // Wait for assets to become available
+            btnArea.innerHTML = '<p>Loading download link…</p>';
+            let attempts = 0;
+            const interval = setInterval(() => {
+              if (window.__latestAssets && window.__latestAssets.length > 0) {
+                clearInterval(interval);
+                const asset = window.__latestAssets.find(a => a.name.toLowerCase().endsWith(`.${method}`));
+                createLink(asset);
+              } else if (++attempts > 30) {
+                clearInterval(interval);
+                btnArea.innerHTML = '<p style="color:var(--muted);">Could not load release assets. Please refresh the page.</p>';
+              }
+            }, 300);
+          }
+        }
+
+        // Tab click handler
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            if (tab.dataset.method === activeMethod) return;
+            // Update active states
+            tabs.forEach(t => {
+              t.classList.remove('active');
+              t.setAttribute('aria-selected', 'false');
+            });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            activeMethod = tab.dataset.method;
+            updateContent(activeMethod);
+          });
+        });
+
+        // Initial load: show MSI by default
+        updateContent('msi');
+      })();
+    </script>
   </body>
 </html>
