@@ -123,7 +123,6 @@ function createReleaseNotes(body) {
   heading.textContent = "What’s new";
   div.appendChild(heading);
 
-  // Remove markdown headings and keep the raw text
   const cleaned = body.replace(/^#.*$/gm, '').trim();
   const textDiv = document.createElement("div");
   textDiv.className = "release-preview-text";
@@ -132,32 +131,6 @@ function createReleaseNotes(body) {
 
   return div;
 }
-
-/* ---------- Installation feedback ---------- */
-function initInstallFeedback() {
-  const main = document.querySelector("main");
-  if (!main || !document.body.dataset.page) return;
-
-  const feedbackDiv = document.createElement("section");
-  feedbackDiv.className = "panel install-feedback";
-  feedbackDiv.innerHTML = `<h2>Installation</h2><p>Let us know you’ve installed Zangetsu!</p>`;
-  const btn = document.createElement("button");
-  btn.className = "ghost-button install-btn";
-  btn.textContent = "I installed Zangetsu";
-  btn.addEventListener("click", () => {
-    const count = parseInt(localStorage.getItem("installCount") || "0") + 1;
-    localStorage.setItem("installCount", count);
-    btn.textContent = `Thanks! (${count})`;
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = "I installed Zangetsu";
-      btn.disabled = false;
-    }, 2000);
-  });
-  feedbackDiv.appendChild(btn);
-  main.appendChild(feedbackDiv);
-}
-document.addEventListener("DOMContentLoaded", initInstallFeedback);
 
 /* ---------- Keyboard shortcut: R to refresh ---------- */
 document.addEventListener("keydown", (e) => {
@@ -208,13 +181,14 @@ async function loadRelease(forceRefresh = false) {
       setCachedData(release, fetchTime);
     }
 
+    window.__latestAssets = release.assets;
+
     const page = document.body.dataset.page;
     const asset = detectAssetName(page, release.assets || []);
     const checksumAsset = release.assets?.find(a => a.name.toLowerCase().includes("checksum") || a.name.toLowerCase().includes("sha256") || a.name.toLowerCase().endsWith(".sha256"));
 
     target.innerHTML = "";
 
-    // Top row
     const topRow = document.createElement("div");
     topRow.className = "download-top-row";
 
@@ -245,7 +219,6 @@ async function loadRelease(forceRefresh = false) {
 
     target.appendChild(topRow);
 
-    // Release name
     const releaseInfo = document.createElement("p");
     releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
