@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TV Setup | Zangetsu</title>
-    <meta name="description" content="Install Zangetsu on Android TV, Google TV, Fire TV and more – download the latest APK and sideload it." />
+    <meta name="description" content="Install Zangetsu on Android TV, Google TV, Fire TV – coming soon." />
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
     <link rel="canonical" href="https://yourdomain.com/tv/" />
@@ -13,25 +13,21 @@
     <link rel="stylesheet" href="../assets/styles.css" />
     <script defer src="../assets/app.js"></script>
     <script defer src="../assets/download.js"></script>
-
-    <meta property="og:title" content="TV Setup | Zangetsu" />
-    <meta property="og:description" content="Get Zangetsu on your TV – sideload the APK on Android TV, Google TV, Fire TV, and other devices." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://yourdomain.com/tv/" />
-    <meta property="og:image" content="https://yourdomain.com/assets/og-image.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="TV Setup | Zangetsu" />
-    <meta name="twitter:description" content="Get Zangetsu on your TV – sideload the APK on Android TV, Google TV, Fire TV, and other devices." />
-    <meta name="twitter:image" content="https://yourdomain.com/assets/og-image.png" />
   </head>
   <body data-page="tv">
+    <div class="bg-cyber" aria-hidden="true">
+      <div class="kanji-watermark">残月</div>
+      <div class="crescent-moon"></div>
+      <div class="diagonal-line"></div>
+    </div>
+
     <a class="skip-link" href="#main-content">Skip to main content</a>
 
     <header class="topbar">
       <div>
         <p class="eyebrow">Zangetsu</p>
         <h1 id="page-title">TV Setup Guide</h1>
-        <p class="subtext">Download the TV APK and sideload it on your Android TV, Google TV, Fire TV, or other supported device.</p>
+        <p class="subtext">Install Zangetsu on your TV device.</p>
       </div>
       <div style="display: flex; gap: 0.5rem; align-items: center;">
         <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
@@ -40,52 +36,21 @@
     </header>
 
     <main id="main-content" class="content" aria-labelledby="page-title">
-      <section class="panel">
+      <section class="panel" style="display:none;">
         <h2>Latest download</h2>
         <div id="download-area" class="download-area">
           <p>Loading release data…</p>
-          <noscript>
-            <p>JavaScript is required to fetch the latest release automatically.</p>
-            <a class="download-button" href="https://github.com/Spyou/Zangetsu/releases/latest" target="_blank" rel="noopener noreferrer">
-              Go to GitHub Releases
-            </a>
-          </noscript>
         </div>
       </section>
-
-      <section class="panel">
-        <h2>Supported TV types</h2>
-        <p>A single APK works on all supported TV platforms:</p>
-        <ul>
-          <li>Android TV</li>
-          <li>Google TV</li>
-          <li>Fire TV</li>
-          <li>Other Android‑based TV devices</li>
-        </ul>
-      </section>
-
-      <section class="panel">
-        <h2>Steps</h2>
-        <ol>
-          <li>Download the TV APK using the button above.</li>
-          <li>Transfer the APK to your TV (via USB, cloud storage, or apps like
-            <a href="https://play.google.com/store/apps/details?id=com.yablio.sendfilestotv" target="_blank" rel="noopener noreferrer">Send Files to TV</a>).
-          </li>
-          <li>Enable installs from unknown sources in your TV’s settings.</li>
-          <li>Open the APK file on your TV and install Zangetsu.</li>
-          <li>Launch Zangetsu and follow on‑screen setup.</li>
-        </ol>
-      </section>
-
-      <section class="panel">
-        <h2>System requirements</h2>
-        <ul>
-          <li>Android TV 6.0 (Marshmallow) or higher</li>
-          <li>Fire TV OS 6+ or Google TV</li>
-          <li>At least 150 MB free storage</li>
-          <li>USB drive or network transfer method</li>
-        </ul>
-      </section>
     </main>
+
+    <div class="coming-soon-overlay" id="coming-soon">
+      <div class="coming-soon-box">
+        <h2>Coming Soon</h2>
+        <p>The TV setup guide is currently under development.</p>
+        <p>Check back soon!</p>
+        <button class="ghost-button" onclick="document.getElementById('coming-soon').style.display='none'">Explore anyway</button>
+      </div>
+    </div>
   </body>
 </html>
