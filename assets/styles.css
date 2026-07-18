@@ -279,7 +279,7 @@ button.ghost-button:hover {
   padding: 1.8rem 1.5rem;
 }
 
-/* ===== Two‑Card Layout (Android guide selection) ===== */
+/* ===== Two‑Card Layout (thin version) ===== */
 .guide-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -291,11 +291,16 @@ button.ghost-button:hover {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 2rem 1.5rem;
+  padding: 1.2rem 1.5rem;
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
 .guide-card:hover {
@@ -305,20 +310,22 @@ button.ghost-button:hover {
 }
 
 .guide-card-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.8rem;
+  font-size: 2rem;
+  margin-bottom: 0.2rem;
 }
 
 .guide-card h3 {
-  margin: 0 0 0.5rem;
+  margin: 0;
   font-weight: 700;
   color: #ffffff;
+  font-size: 1.2rem;
 }
 
 .guide-card p {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin: 0;
+  line-height: 1.4;
 }
 
 /* ===== Tabs (Windows page) ===== */
@@ -378,7 +385,7 @@ button.ghost-button:hover {
   font-family: 'Fira Code', monospace;
 }
 
-/* ===== Download Area ===== */
+/* ===== Download Area (kept for future step pages) ===== */
 .download-area { display: grid; gap: 0.8rem; }
 
 .download-top-row {
@@ -622,7 +629,7 @@ main {
   animation: fadeIn 0.6s ease both;
 }
 
-/* ===== Coming Soon Overlay ===== */
+/* ===== Coming Soon Overlay (slightly smaller) ===== */
 .coming-soon-overlay {
   position: fixed;
   top: 0;
@@ -642,28 +649,29 @@ main {
   background: rgba(10,10,10,0.95);
   border: 1px solid var(--accent);
   border-radius: var(--radius-lg);
-  padding: 3rem 2.5rem;
+  padding: 2rem 2rem;
   text-align: center;
-  max-width: 25rem;
+  max-width: 22rem;
   box-shadow: 0 0 60px rgba(255, 26, 26, 0.2);
 }
 
 .coming-soon-box h2 {
   font-family: 'Fira Code', monospace;
-  font-size: 2rem;
+  font-size: 1.6rem;
   color: var(--accent);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
 .coming-soon-box p {
   color: var(--muted);
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .coming-soon-box .ghost-button {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 /* ===== Responsive ===== */
