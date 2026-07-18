@@ -37,7 +37,7 @@
       <div>
         <p class="eyebrow">Zangetsu</p>
         <h1 id="page-title">Android Setup Guide</h1>
-        <p class="subtext">Install Zangetsu on Android using the APK – a quick, step‑by‑step process.</p>
+        <p class="subtext">Choose a guide to get started with Zangetsu on your Android device.</p>
       </div>
       <div style="display: flex; gap: 0.5rem; align-items: center;">
         <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
@@ -46,12 +46,12 @@
     </header>
 
     <main id="main-content" class="content" aria-labelledby="page-title">
-      <!-- Two guide selection cards -->
+      <!-- Two thin selection cards -->
       <div class="guide-cards">
-        <div class="guide-card" onclick="document.getElementById('install-guide').scrollIntoView({behavior:'smooth'})">
+        <div class="guide-card" onclick="location.href='install-guide.html'">
           <div class="guide-card-icon">📥</div>
           <h3>Download &amp; Install Guide</h3>
-          <p>Get the APK and install it on your Android device.</p>
+          <p>Get the APK and install it step by step.</p>
         </div>
         <div class="guide-card" id="setup-card">
           <div class="guide-card-icon">⚙️</div>
@@ -60,7 +60,7 @@
         </div>
       </div>
 
-      <!-- Coming soon popup for App Setup Guide (hidden by default) -->
+      <!-- Coming soon popup for App Setup Guide -->
       <div id="setup-popup" class="coming-soon-overlay" style="display:none;">
         <div class="coming-soon-box">
           <h2>Coming Soon</h2>
@@ -69,109 +69,11 @@
           <button class="ghost-button" onclick="document.getElementById('setup-popup').style.display='none'">Close</button>
         </div>
       </div>
-
-      <!-- Existing installation guide anchored -->
-      <div id="install-guide">
-        <!-- Download area -->
-        <section class="panel">
-          <h2>Latest download</h2>
-          <div id="download-area" class="download-area">
-            <p>Loading release data…</p>
-            <noscript>
-              <p>JavaScript is required to fetch the latest release automatically.</p>
-              <a class="download-button" href="https://github.com/Spyou/Zangetsu/releases/latest" target="_blank" rel="noopener noreferrer">
-                Go to GitHub Releases
-              </a>
-            </noscript>
-          </div>
-        </section>
-
-        <!-- Step‑by‑Step Installation -->
-        <section class="panel">
-          <h2>Step‑by‑Step Installation</h2>
-
-          <h3>Step 1: Download the APK</h3>
-          <p>Scroll down to the <strong>Downloads</strong> section above and download the latest Android APK. If your browser asks whether you want to keep the file, tap <em>Download anyway</em> or <em>Keep</em>.</p>
-
-          <h3>Step 2: Open the APK</h3>
-          <p>Once the download finishes:</p>
-          <ul>
-            <li>Tap the download notification, <strong>or</strong></li>
-            <li>Open your <strong>Downloads</strong> folder using your file manager and locate the APK.</li>
-          </ul>
-          <p>Tap the APK to begin installation.</p>
-
-          <h3>Step 3: Allow app installation (if prompted)</h3>
-          <p>The first time you install an APK from your browser or file manager, Android may block the installation.</p>
-          <p>If you see a message saying the installation isn’t allowed:</p>
-          <ol>
-            <li>Tap <strong>Settings</strong>.</li>
-            <li>Enable <strong>Allow from this source</strong> (or <em>Install unknown apps</em>, depending on your Android version).</li>
-            <li>Return to the installer.</li>
-          </ol>
-          <p>This only needs to be done once for each app you use to install APKs (such as Chrome, Firefox, or your file manager).</p>
-
-          <h3>Step 4: Install Zangetsu</h3>
-          <p>Tap <strong>Install</strong> and wait for Android to finish installing the app. This usually takes less than a minute.</p>
-
-          <h3>Step 5: Open Zangetsu</h3>
-          <p>Once installation is complete:</p>
-          <ul>
-            <li>Tap <strong>Open</strong>, <strong>or</strong></li>
-            <li>Find Zangetsu in your app drawer or home screen.</li>
-          </ul>
-          <p>You’re now ready to start using the app.</p>
-        </section>
-
-        <!-- Updating -->
-        <section class="panel">
-          <h2>Updating Zangetsu</h2>
-          <p>When a new version is released:</p>
-          <ol>
-            <li>Download the latest APK from this website.</li>
-            <li>Open the new APK.</li>
-            <li>Tap <strong>Update</strong> (your data and settings will be kept).</li>
-          </ol>
-          <p>You don’t need to uninstall the previous version first.</p>
-        </section>
-
-        <!-- Troubleshooting -->
-        <section class="panel">
-          <h2>Troubleshooting</h2>
-
-          <h3>“App not installed”</h3>
-          <ul>
-            <li>Make sure you’ve downloaded the correct APK for Android.</li>
-            <li>Ensure there’s enough free storage on your device.</li>
-            <li>If updating, make sure the APK is signed with the same certificate as your existing installation.</li>
-          </ul>
-
-          <h3>Installation is blocked</h3>
-          <p>Enable <strong>Allow from this source</strong> for the browser or file manager you’re using.</p>
-
-          <h3>Can’t find the downloaded APK</h3>
-          <p>Check your <strong>Downloads</strong> folder or your browser’s download history.</p>
-
-          <h3>Google Play Protect warning</h3>
-          <p>Since Zangetsu is installed from outside the Play Store, Android may show a Play Protect warning. If you downloaded the APK from the official Zangetsu website or GitHub release, you can proceed with the installation.</p>
-        </section>
-
-        <!-- System requirements -->
-        <section class="panel">
-          <h2>System requirements</h2>
-          <ul>
-            <li>Android 5.0 (Lollipop) or later</li>
-            <li>At least 100 MB free storage</li>
-            <li>An internet connection for initial setup</li>
-          </ul>
-        </section>
-      </div>
     </main>
 
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
     <script>
-      // Popup for App Setup Guide
       document.getElementById('setup-card').addEventListener('click', function() {
         document.getElementById('setup-popup').style.display = 'flex';
       });
