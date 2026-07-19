@@ -138,12 +138,49 @@ document.addEventListener("keydown", (e) => {
     const activeTag = document.activeElement.tagName.toLowerCase();
     if (activeTag !== "input" && activeTag !== "textarea") {
       e.preventDefault();
-      loadRelease(true);
+      // Try to refresh if loadRelease exists
+      if (typeof loadRelease === "function") loadRelease(true);
     }
   }
 });
 
-/* ---------- Main loader ---------- */
+/* ---------- Shared fetch (no DOM required) ---------- */
+async function fetchReleaseAssets(forceRefresh = false) {
+  try {
+    if (!forceRefresh) {
+      const cached = getCachedData();
+      if (cached) {
+        window.__latestAssets = cached.release.assets;
+        return cached.release;
+      }
+    }
+
+    const response = await fetch(API_URL, {
+      headers: { Accept: "application/vnd.github+json" },
+    });
+
+    if (!response.ok) {
+      if (response.status === 403 && response.headers.get("x-ratelimit-remaining") === "0") {
+        const resetTime = response.headers.get("x-ratelimit-reset");
+        const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null;
+        throw new Error(`GitHub API rate limit exceeded. ${resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."}`);
+      }
+      throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+    }
+
+    const release = await response.json();
+    setCachedData(release, Date.now());
+    window.__latestAssets = release.assets;
+    return release;
+  } catch (error) {
+    console.error(error);
+    // Still set an empty array so the UI knows it failed
+    window.__latestAssets = [];
+    throw error;
+  }
+}
+
+/* ---------- Main loader (for pages with #download-area) ---------- */
 async function loadRelease(forceRefresh = false) {
   const target = document.getElementById("download-area");
   if (!target) return;
@@ -151,44 +188,14 @@ async function loadRelease(forceRefresh = false) {
   target.innerHTML = '<div class="loading-spinner"><span>Loading release data…</span></div>';
 
   try {
-    let release;
-    let fetchTime = Date.now();
-
-    if (!forceRefresh) {
-      const cached = getCachedData();
-      if (cached) {
-        release = cached.release;
-        fetchTime = cached.timestamp;
-      }
-    }
-
-    if (!release) {
-      const response = await fetch(API_URL, {
-        headers: { Accept: "application/vnd.github+json" },
-      });
-
-      if (!response.ok) {
-        if (response.status === 403 && response.headers.get("x-ratelimit-remaining") === "0") {
-          const resetTime = response.headers.get("x-ratelimit-reset");
-          const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null;
-          throw new Error(`GitHub API rate limit exceeded. ${resetDate ? `Resets at ${resetDate.toLocaleTimeString()}.` : "Please try again later."}`);
-        }
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-      }
-
-      release = await response.json();
-      fetchTime = Date.now();
-      setCachedData(release, fetchTime);
-    }
-
-    window.__latestAssets = release.assets;
-
+    const release = await fetchReleaseAssets(forceRefresh);
     const page = document.body.dataset.page;
     const asset = detectAssetName(page, release.assets || []);
     const checksumAsset = release.assets?.find(a => a.name.toLowerCase().includes("checksum") || a.name.toLowerCase().includes("sha256") || a.name.toLowerCase().endsWith(".sha256"));
 
     target.innerHTML = "";
 
+    // Top row
     const topRow = document.createElement("div");
     topRow.className = "download-top-row";
 
@@ -214,11 +221,12 @@ async function loadRelease(forceRefresh = false) {
 
     const lastUpdated = document.createElement("span");
     lastUpdated.className = "last-updated";
-    lastUpdated.textContent = `Last checked: ${new Date(fetchTime).toLocaleTimeString()}`;
+    lastUpdated.textContent = `Last checked: ${new Date(Date.now()).toLocaleTimeString()}`;
     topRow.appendChild(lastUpdated);
 
     target.appendChild(topRow);
 
+    // Release name
     const releaseInfo = document.createElement("p");
     releaseInfo.textContent = release.name || "Latest GitHub release";
     target.appendChild(releaseInfo);
@@ -308,8 +316,10 @@ async function loadRelease(forceRefresh = false) {
     retry.textContent = "Retry";
     retry.addEventListener("click", () => loadRelease(true));
     target.appendChild(retry);
-    console.error(error);
   }
 }
 
-loadRelease();
+// Auto‑run on pages that have a download area
+if (document.getElementById("download-area")) {
+  loadRelease();
+}
