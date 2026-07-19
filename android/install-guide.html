@@ -96,7 +96,7 @@
 
     <script>
   (function() {
-    // Step definitions (unchanged)
+    // ---------- Step content definitions (unchanged) ----------
     const steps = [
       { 
         title: "Choose the Correct APK",
@@ -201,37 +201,30 @@
       }
     }
 
-    async function loadApkList() {
+    // Build APK list – assumes window.__latestAssets is already populated
+    function loadApkList() {
       const container = document.getElementById('apk-list');
       if (!container) return;
 
-      try {
-        // Fetch assets via the new shared function
-        if (!window.__latestAssets || window.__latestAssets.length === 0) {
-          await fetchReleaseAssets();
-        }
-        const assets = window.__latestAssets || [];
-        const apks = assets.filter(a => a.name.toLowerCase().endsWith('.apk'));
+      const assets = window.__latestAssets || [];
+      const apks = assets.filter(a => a.name.toLowerCase().endsWith('.apk'));
 
-        if (apks.length === 0) {
-          container.innerHTML = '<p>No APK files found in the latest release.</p>';
-          return;
-        }
+      if (apks.length === 0) {
+        container.innerHTML = '<p>No APK files found in the latest release.</p>';
+        return;
+      }
 
-        const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
-        const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
-        const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
-        const other = apks.filter(a => a !== universal && a !== arm64 && a !== armv7);
+      const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
+      const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
+      const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
+      const other = apks.filter(a => a !== universal && a !== arm64 && a !== armv7);
 
-        container.innerHTML = '';
-        if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
-        if (arm64) container.appendChild(createApkRow(arm64, 'ARM64 (arm64-v8a)', 'For most modern Android phones and tablets with a 64-bit processor.'));
-        if (armv7) container.appendChild(createApkRow(armv7, 'ARMv7 (armeabi-v7a)', 'For older Android devices that use a 32-bit processor.'));
-        if (other.length > 0) {
-          other.forEach(apk => container.appendChild(createApkRow(apk, apk.name, 'Additional variant')));
-        }
-      } catch (error) {
-        container.innerHTML = `<p>Could not load downloads: ${error.message}</p>`;
+      container.innerHTML = '';
+      if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
+      if (arm64) container.appendChild(createApkRow(arm64, 'ARM64 (arm64-v8a)', 'For most modern Android phones and tablets with a 64-bit processor.'));
+      if (armv7) container.appendChild(createApkRow(armv7, 'ARMv7 (armeabi-v7a)', 'For older Android devices that use a 32-bit processor.'));
+      if (other.length > 0) {
+        other.forEach(apk => container.appendChild(createApkRow(apk, apk.name, 'Additional variant')));
       }
     }
 
@@ -271,14 +264,14 @@
       }
     });
 
-    // Kick off asset fetch immediately
-    fetchReleaseAssets().then(() => {
-      // If we're already on step 1, render the APK list
-      if (currentStep === 1) {
-        loadApkList();
-      }
-    });
-
-    renderStep(1);
+    // ***** THE FIX: wait for assets, then render step 1 *****
+    fetchReleaseAssets()
+      .then(() => {
+        renderStep(1);
+      })
+      .catch(() => {
+        // Even on error, render so the user sees a message
+        renderStep(1);
+      });
   })();
-            </script>
+    </script>
