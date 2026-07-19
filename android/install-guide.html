@@ -96,53 +96,62 @@
 
     <script>
       (function() {
-        // ---------- Step content definitions ----------
+        // ---------- Step content definitions (with flair) ----------
         const steps = [
           { // Step 1
             title: "Choose the Correct APK",
-            desc: "Before downloading, select the APK that matches your device.",
+            desc: "Select the APK that matches your device.",
             html: `
               <div class="download-options" id="apk-list">
                 <p class="loading-spinner"><span>Loading downloads…</span></p>
               </div>
-              <p class="step-note">If you don't know your device's architecture, simply download the <strong>Universal APK</strong>.</p>
+              <p class="step-note"><span class="accent-text">🔍 Tip:</span> If you don't know your device's architecture, simply download the <strong class="accent-text">Universal APK</strong>.</p>
             `
           },
           { // Step 2
             title: "Download the APK",
-            desc: "Tap the download button for your chosen APK.",
+            desc: "Get the file onto your device.",
             html: `
               <p>Tap the download button for your chosen APK.</p>
-              <p>Your browser may display a warning because the app isn't downloaded from the Google Play Store. If prompted, tap <strong>Download anyway</strong>, <strong>Keep</strong>, or <strong>Continue</strong>.</p>
-              <p>Wait for the download to finish before continuing.</p>
+              <div class="flair-notice">
+                <span class="icon">⚠️</span>
+                <span>Your browser may display a warning because the app isn't from the Play Store. If prompted, tap <strong class="accent-text">Download anyway</strong>, <strong class="accent-text">Keep</strong>, or <strong class="accent-text">Continue</strong>.</span>
+              </div>
+              <p class="step-note">⏳ Wait for the download to finish before continuing.</p>
             `
           },
           { // Step 3
             title: "Open the Downloaded File",
-            desc: "Once the download is complete, open the APK.",
+            desc: "Locate and launch the APK.",
             html: `
               <p>Once the download is complete:</p>
               <ul>
-                <li>Tap the download notification, <strong>or</strong></li>
-                <li>Open your <strong>Downloads</strong> folder and locate the <code>.apk</code> file.</li>
+                <li>📲 Tap the <strong>download notification</strong>, <strong>or</strong></li>
+                <li>📁 Open your <strong>Downloads</strong> folder and find the <code class="accent-text">.apk</code> file.</li>
               </ul>
               <p>Tap the APK to begin the installation.</p>
             `
           },
           { // Step 4
             title: "Install Zangetsu",
-            desc: "Complete the installation process.",
+            desc: "Allow the installation and wait.",
             html: `
-              <p>If Android blocks the installation, tap <strong>Settings</strong> and enable <strong>Allow from this source</strong> or <strong>Install unknown apps</strong> for the browser or file manager you're using.</p>
-              <p>Return to the installer, tap <strong>Install</strong>, and wait for the installation to complete.</p>
+              <div class="flair-notice">
+                <span class="icon">🔒</span>
+                <span>If Android blocks the installation, tap <strong class="accent-text">Settings</strong> and enable <strong class="accent-text">Allow from this source</strong> or <strong class="accent-text">Install unknown apps</strong> for the browser or file manager you're using.</span>
+              </div>
+              <p>Return to the installer, tap <strong class="accent-text">Install</strong>, and wait for the process to finish.</p>
             `
           },
           { // Step 5
             title: "Open Zangetsu",
-            desc: "Launch the app and get started.",
+            desc: "Launch the app and start streaming.",
             html: `
-              <p>When the installation is complete, tap <strong>Open</strong> to launch Zangetsu.</p>
+              <p>When installation is complete, tap <strong class="accent-text">Open</strong> to launch Zangetsu.</p>
               <p>If you choose <strong>Done</strong>, you can open the app later from your <strong>Home Screen</strong> or <strong>App Drawer</strong>.</p>
+              <div class="flair-success">
+                <span>✅ You're all set! Enjoy the show.</span>
+              </div>
             `
           }
         ];
@@ -198,7 +207,7 @@
           }
         }
 
-        // APK list loader
+        // APK list loader (unchanged – still categorizes by architecture)
         function loadApkList() {
           const container = document.getElementById('apk-list');
           if (!container) return;
@@ -210,11 +219,10 @@
                 container.innerHTML = '<p>No APK files found in the latest release.</p>';
                 return;
               }
-              // Try to categorize
               const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
               const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
               const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
-              const other = apks.filter(a => !universal && !arm64 && !armv7);
+              const other = apks.filter(a => a !== universal && a !== arm64 && a !== armv7);
 
               container.innerHTML = '';
               if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
@@ -259,8 +267,8 @@
           if (currentStep < totalSteps) {
             goToStep(currentStep + 1);
           } else {
-            // Finish – could redirect or reset
-            alert('Installation guide complete!');
+            // Finish – small celebratory effect
+            alert('🎉 Installation guide complete!');
           }
         });
 
