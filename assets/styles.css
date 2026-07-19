@@ -299,3 +299,64 @@ main { animation: fadeIn 0.6s ease both; }
   .compact-header { flex-direction: row; flex-wrap: wrap; }
   .header-right { margin-top: 0.5rem; }
               }
+
+/* Pill box for device selector */
+.pill-box {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+}
+.pill-btn {
+  font-size: 0.8rem;
+  min-height: 2rem;
+  padding: 0 0.8rem;
+}
+
+/* Release tabs (compact) */
+.release-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.tab-btn.pill-btn {
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+}
+.pill-link {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-family: 'Fira Code', monospace;
+  margin-left: auto;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.pill-link:hover { border-color: var(--accent); }
+
+/* APK row info */
+.apk-info {
+  display: flex;
+  flex-direction: column;
+}
+.apk-label {
+  font-weight: 600;
+}
+.apk-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.step-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
