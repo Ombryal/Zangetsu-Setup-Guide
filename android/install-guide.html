@@ -20,16 +20,16 @@
 
     <a class="skip-link" href="#main-content">Skip to main content</a>
 
-    <!-- Header -->
+    <!-- Header (compact) -->
     <header class="topbar compact-header">
       <div class="header-left">
         <span class="logo-text">Zangetsu</span>
       </div>
       <div class="header-right">
-        <div class="device-selector">
+        <div class="device-selector pill-box">
           <span class="device-icon">📱</span>
           <span class="device-name">Android</span>
-          <a href="../guide/" class="change-btn ghost-button">Change</a>
+          <a href="../guide/" class="ghost-button change-btn pill-btn">Change</a>
         </div>
         <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
       </div>
@@ -41,45 +41,38 @@
       <p class="subtext">Follow the steps for your device to get started with Zangetsu extensions.</p>
     </section>
 
-    <!-- Release selection -->
+    <!-- Release selection (compact) -->
     <div class="content release-tabs">
-      <button class="tab-btn active">Stable</button>
-      <button class="tab-btn" disabled>Beta (coming soon)</button>
-      <a href="https://github.com/Spyou/Zangetsu/releases" target="_blank" rel="noopener noreferrer" class="tab-link">All releases →</a>
+      <button class="tab-btn pill-btn active">Stable</button>
+      <button class="tab-btn pill-btn" disabled>Beta</button>
+      <a href="https://github.com/Spyou/Zangetsu/releases" target="_blank" rel="noopener noreferrer" class="pill-link">All releases →</a>
     </div>
 
     <!-- Main step card -->
     <main id="main-content" class="content step-layout" aria-labelledby="step-heading">
       <!-- Progress bar -->
       <div class="progress-bar-container">
-        <div class="progress-bar" style="width: 20%;"></div>
+        <div class="progress-bar" id="progress-bar" style="width: 20%;"></div>
       </div>
-      <p class="step-count">Step 1 of 5</p>
+      <p class="step-count" id="step-count">Step 1 of 5</p>
 
       <section class="panel step-card">
-        <div class="step-header">
-          <div class="step-badge">1</div>
-          <div class="step-title">
-            <h2 id="step-heading">Download &amp; Install</h2>
-            <p class="step-desc">Download Zangetsu for your device and install it.</p>
-          </div>
-        </div>
-
-        <!-- Download options -->
-        <div class="download-options" id="apk-list">
-          <p class="loading-spinner"><span>Loading downloads…</span></p>
-        </div>
+        <!-- Dynamic step content injected by JS -->
+        <div id="step-content"></div>
 
         <!-- Step navigation -->
         <div class="step-nav">
-          <div class="step-dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+          <div class="step-dots" id="step-dots">
+            <span class="dot active" data-step="1"></span>
+            <span class="dot" data-step="2"></span>
+            <span class="dot" data-step="3"></span>
+            <span class="dot" data-step="4"></span>
+            <span class="dot" data-step="5"></span>
           </div>
-          <button class="ghost-button next-btn" onclick="alert('Next step coming soon.')">Next →</button>
+          <div class="nav-buttons">
+            <button class="ghost-button prev-btn" id="prev-btn" disabled>← Previous</button>
+            <button class="ghost-button next-btn" id="next-btn">Next →</button>
+          </div>
         </div>
       </section>
     </main>
@@ -101,211 +94,185 @@
       <a href="../repos/" class="footer-link">Repos</a>
     </footer>
 
-    <!-- Dynamic download list script -->
     <script>
       (function() {
-        const container = document.getElementById('apk-list');
-        function renderApks(assets) {
-          if (!assets || assets.length === 0) {
-            container.innerHTML = '<p>No APK files found in the latest release.</p>';
-            return;
+        // ---------- Step content definitions ----------
+        const steps = [
+          { // Step 1
+            title: "Choose the Correct APK",
+            desc: "Before downloading, select the APK that matches your device.",
+            html: `
+              <div class="download-options" id="apk-list">
+                <p class="loading-spinner"><span>Loading downloads…</span></p>
+              </div>
+              <p class="step-note">If you don't know your device's architecture, simply download the <strong>Universal APK</strong>.</p>
+            `
+          },
+          { // Step 2
+            title: "Download the APK",
+            desc: "Tap the download button for your chosen APK.",
+            html: `
+              <p>Tap the download button for your chosen APK.</p>
+              <p>Your browser may display a warning because the app isn't downloaded from the Google Play Store. If prompted, tap <strong>Download anyway</strong>, <strong>Keep</strong>, or <strong>Continue</strong>.</p>
+              <p>Wait for the download to finish before continuing.</p>
+            `
+          },
+          { // Step 3
+            title: "Open the Downloaded File",
+            desc: "Once the download is complete, open the APK.",
+            html: `
+              <p>Once the download is complete:</p>
+              <ul>
+                <li>Tap the download notification, <strong>or</strong></li>
+                <li>Open your <strong>Downloads</strong> folder and locate the <code>.apk</code> file.</li>
+              </ul>
+              <p>Tap the APK to begin the installation.</p>
+            `
+          },
+          { // Step 4
+            title: "Install Zangetsu",
+            desc: "Complete the installation process.",
+            html: `
+              <p>If Android blocks the installation, tap <strong>Settings</strong> and enable <strong>Allow from this source</strong> or <strong>Install unknown apps</strong> for the browser or file manager you're using.</p>
+              <p>Return to the installer, tap <strong>Install</strong>, and wait for the installation to complete.</p>
+            `
+          },
+          { // Step 5
+            title: "Open Zangetsu",
+            desc: "Launch the app and get started.",
+            html: `
+              <p>When the installation is complete, tap <strong>Open</strong> to launch Zangetsu.</p>
+              <p>If you choose <strong>Done</strong>, you can open the app later from your <strong>Home Screen</strong> or <strong>App Drawer</strong>.</p>
+            `
           }
-          const apks = assets.filter(a => a.name.toLowerCase().endsWith('.apk'));
-          if (apks.length === 0) {
-            container.innerHTML = '<p>No APK files found in this release.</p>';
-            return;
+        ];
+
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        // DOM elements
+        const progressBar = document.getElementById('progress-bar');
+        const stepCountEl = document.getElementById('step-count');
+        const stepContent = document.getElementById('step-content');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const dots = document.querySelectorAll('.dot');
+
+        // Render a step
+        function renderStep(step) {
+          const data = steps[step-1];
+          let html = `
+            <div class="step-header">
+              <div class="step-badge">${step}</div>
+              <div class="step-title">
+                <h2 id="step-heading">${data.title}</h2>
+                <p class="step-desc">${data.desc}</p>
+              </div>
+            </div>
+            ${data.html}
+          `;
+          stepContent.innerHTML = html;
+
+          // If step 1, load APK list
+          if (step === 1) {
+            loadApkList();
           }
-          container.innerHTML = '';
-          apks.forEach(apk => {
+
+          // Update progress
+          const percent = (step / totalSteps) * 100;
+          progressBar.style.width = percent + '%';
+          stepCountEl.textContent = `Step ${step} of ${totalSteps}`;
+
+          // Update dots
+          dots.forEach(d => {
+            const s = parseInt(d.dataset.step);
+            d.classList.toggle('active', s <= step);
+          });
+
+          // Buttons state
+          prevBtn.disabled = (step === 1);
+          if (step === totalSteps) {
+            nextBtn.textContent = 'Finish';
+          } else {
+            nextBtn.textContent = 'Next →';
+          }
+        }
+
+        // APK list loader
+        function loadApkList() {
+          const container = document.getElementById('apk-list');
+          if (!container) return;
+
+          function tryRender() {
+            if (window.__latestAssets && window.__latestAssets.length > 0) {
+              const apks = window.__latestAssets.filter(a => a.name.toLowerCase().endsWith('.apk'));
+              if (apks.length === 0) {
+                container.innerHTML = '<p>No APK files found in the latest release.</p>';
+                return;
+              }
+              // Try to categorize
+              const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
+              const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
+              const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
+              const other = apks.filter(a => !universal && !arm64 && !armv7);
+
+              container.innerHTML = '';
+              if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
+              if (arm64) container.appendChild(createApkRow(arm64, 'ARM64 (arm64-v8a)', 'For most modern Android phones and tablets with a 64-bit processor.'));
+              if (armv7) container.appendChild(createApkRow(armv7, 'ARMv7 (armeabi-v7a)', 'For older Android devices that use a 32-bit processor.'));
+              if (other.length > 0) {
+                other.forEach(apk => container.appendChild(createApkRow(apk, apk.name, 'Additional variant')));
+              }
+            } else {
+              container.innerHTML = '<p class="loading-spinner"><span>Loading downloads…</span></p>';
+              setTimeout(tryRender, 300);
+            }
+          }
+
+          function createApkRow(asset, label, description) {
             const row = document.createElement('a');
             row.className = 'download-row-item';
-            row.href = apk.browser_download_url;
+            row.href = asset.browser_download_url;
             row.target = '_blank';
             row.rel = 'noopener noreferrer';
             row.innerHTML = `
               <span class="download-icon">⬇️</span>
-              <span class="apk-name">${apk.name}</span>
-              <span class="apk-compat">${getCompat(apk.name)}</span>
+              <div class="apk-info">
+                <span class="apk-label">${label}</span>
+                <span class="apk-desc">${description}</span>
+              </div>
             `;
-            container.appendChild(row);
-          });
-        }
-
-        function getCompat(name) {
-          const n = name.toLowerCase();
-          if (n.includes('arm64')) return 'Most phones';
-          if (n.includes('x86')) return 'Emulators';
-          if (n.includes('universal')) return 'All devices';
-          return 'All devices';
-        }
-
-        // Wait for __latestAssets
-        function tryRender() {
-          if (window.__latestAssets && window.__latestAssets.length > 0) {
-            renderApks(window.__latestAssets);
-          } else {
-            container.innerHTML = '<p class="loading-spinner"><span>Loading downloads…</span></p>';
-            setTimeout(tryRender, 300);
+            return row;
           }
+
+          tryRender();
         }
-        tryRender();
+
+        // Navigation
+        function goToStep(step) {
+          currentStep = step;
+          renderStep(step);
+          window.scrollTo({ top: document.getElementById('main-content').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        nextBtn.addEventListener('click', () => {
+          if (currentStep < totalSteps) {
+            goToStep(currentStep + 1);
+          } else {
+            // Finish – could redirect or reset
+            alert('Installation guide complete!');
+          }
+        });
+
+        prevBtn.addEventListener('click', () => {
+          if (currentStep > 1) {
+            goToStep(currentStep - 1);
+          }
+        });
+
+        // Initialize
+        renderStep(1);
       })();
     </script>
-
-    <!-- Extra styles for this page (temporary, will be merged into main CSS) -->
-    <style>
-      /* Compact header */
-      .compact-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.2rem 0 1rem;
-      }
-      .header-left { display: flex; align-items: center; gap: 1rem; }
-      .logo-text { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; }
-      .header-right { display: flex; align-items: center; gap: 1rem; }
-      .device-selector { display: flex; align-items: center; gap: 0.5rem; }
-      .device-icon { font-size: 1.5rem; }
-      .device-name { font-weight: 600; }
-      .change-btn { font-size: 0.8rem; min-height: 2rem; }
-
-      /* Intro section */
-      .intro-section { margin-top: 0; padding: 0; }
-      .intro-section h1 { font-size: clamp(2rem, 3vw, 3rem); }
-      .intro-section .subtext { font-size: 0.95rem; }
-
-      /* Release tabs */
-      .release-tabs {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-      }
-      .tab-link {
-        margin-left: auto;
-        font-size: 0.9rem;
-        color: var(--accent);
-        font-family: 'Fira Code', monospace;
-      }
-      .tab-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-      /* Progress bar */
-      .progress-bar-container {
-        width: 100%;
-        height: 4px;
-        background: var(--border);
-        border-radius: 2px;
-        margin-bottom: 0.5rem;
-      }
-      .progress-bar {
-        height: 100%;
-        background: var(--accent);
-        border-radius: 2px;
-        transition: width 0.3s ease;
-      }
-      .step-count {
-        font-size: 0.8rem;
-        color: var(--muted);
-        font-family: 'Fira Code', monospace;
-        margin-bottom: 1rem;
-      }
-
-      /* Step card */
-      .step-layout { margin-bottom: 2rem; }
-      .step-card { padding: 1.5rem; }
-      .step-header {
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .step-badge {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-        background: var(--accent);
-        color: #000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-      }
-      .step-title h2 { margin: 0 0 0.2rem; font-size: 1.3rem; }
-      .step-desc { color: var(--muted); font-size: 0.9rem; margin: 0; }
-
-      /* Download rows */
-      .download-options {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .download-row-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.8rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        background: rgba(255,255,255,0.02);
-        text-decoration: none;
-        color: var(--text);
-        transition: border-color 0.2s, background 0.2s;
-      }
-      .download-row-item:hover {
-        border-color: var(--accent);
-        background: rgba(255,26,26,0.05);
-      }
-      .download-icon { font-size: 1.2rem; }
-      .apk-name { flex: 1; font-weight: 500; }
-      .apk-compat { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
-
-      /* Step navigation */
-      .step-nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 1rem;
-      }
-      .step-dots { display: flex; gap: 0.4rem; }
-      .dot {
-        width: 0.6rem;
-        height: 0.6rem;
-        border-radius: 50%;
-        background: var(--border);
-        transition: background 0.2s;
-      }
-      .dot.active { background: var(--accent); }
-      .next-btn { min-height: 2.5rem; }
-
-      /* Quick cards */
-      .quick-cards { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin-bottom: 2rem; }
-      .quick-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.2rem 1.5rem;
-        min-height: auto;
-        text-decoration: none;
-      }
-      .quick-card h3 { margin: 0 0 0.3rem; font-size: 1.1rem; }
-      .quick-card p { margin: 0; font-size: 0.85rem; }
-      .external-icon { font-size: 1.2rem; color: var(--accent); }
-
-      /* Footer */
-      .footer-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem 0;
-        border-top: 1px solid var(--border);
-        margin-top: 2rem;
-      }
-      .footer-link { color: var(--muted); font-size: 0.9rem; }
-      .footer-link:hover { color: var(--accent); }
-    </style>
   </body>
 </html>
