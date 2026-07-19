@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Android Install | Zangetsu</title>
+    <meta name="description" content="Step‑by‑step Android installation guide for Zangetsu." />
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="../assets/app.js"></script>
+    <script defer src="../assets/download.js"></script>
+  </head>
+  <body data-page="android-install">
+    <div class="bg-cyber" aria-hidden="true">
+      <div class="kanji-watermark">残月</div>
+      <div class="crescent-moon"></div>
+      <div class="diagonal-line"></div>
+    </div>
+
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- Header (compact) -->
+    <header class="topbar compact-header">
+      <div class="header-left">
+        <span class="logo-text">Zangetsu</span>
+      </div>
+      <div class="header-right">
+        <div class="device-selector pill-box">
+          <span class="device-icon">📱</span>
+          <span class="device-name">Android</span>
+          <a href="../guide/" class="ghost-button change-btn pill-btn">Change</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Introduction -->
+    <section class="intro-section content">
+      <h1>Setup Guide</h1>
+      <p class="subtext">Follow the steps for your device to get started with Zangetsu extensions.</p>
+    </section>
+
+    <!-- Release selection (compact) -->
+    <div class="content release-tabs">
+      <button class="tab-btn pill-btn active">Stable</button>
+      <button class="tab-btn pill-btn" disabled>Beta</button>
+      <a href="https://github.com/Spyou/Zangetsu/releases" target="_blank" rel="noopener noreferrer" class="pill-link">All releases →</a>
+    </div>
+
+    <!-- Main step card -->
+    <main id="main-content" class="content step-layout" aria-labelledby="step-heading">
+      <!-- Progress bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar" style="width: 20%;"></div>
+      </div>
+      <p class="step-count" id="step-count">Step 1 of 5</p>
+
+      <section class="panel step-card">
+        <!-- Dynamic step content injected by JS -->
+        <div id="step-content"></div>
+
+        <!-- Step navigation -->
+        <div class="step-nav">
+          <div class="step-dots" id="step-dots">
+            <span class="dot active" data-step="1"></span>
+            <span class="dot" data-step="2"></span>
+            <span class="dot" data-step="3"></span>
+            <span class="dot" data-step="4"></span>
+            <span class="dot" data-step="5"></span>
+          </div>
+          <div class="nav-buttons">
+            <button class="ghost-button prev-btn" id="prev-btn" disabled>← Previous</button>
+            <button class="ghost-button next-btn" id="next-btn">Next →</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Quick‑access cards -->
+    <div class="content quick-cards">
+      <a href="../repos/" class="card quick-card">
+        <div>
+          <h3>Browse Repos</h3>
+          <p>Copy repo URLs to add manually</p>
+        </div>
+        <span class="external-icon">↗</span>
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="content footer-bar">
+      <a href="../" class="footer-link">Zangetsu Extension Guide</a>
+      <a href="../repos/" class="footer-link">Repos</a>
+    </footer>
+
+    <script>
+      // Wait for all deferred scripts (download.js) to load
+      document.addEventListener('DOMContentLoaded', function () {
+        // ---------- Step content definitions ----------
+        const steps = [
+          {
+            title: "Choose the Correct APK",
+            desc: "Select the APK that matches your device.",
+            html: `
+              <div class="download-options" id="apk-list">
+                <p class="loading-spinner"><span>Loading downloads…</span></p>
+              </div>
+              <p class="step-note"><span class="accent-text">🔍 Tip:</span> If you don't know your device's architecture, simply download the <strong class="accent-text">Universal APK</strong>.</p>
+            `
+          },
+          {
+            title: "Download the APK",
+            desc: "Get the file onto your device.",
+            html: `
+              <p>Tap the download button for your chosen APK.</p>
+              <div class="flair-notice">
+                <span class="icon">⚠️</span>
+                <span>Your browser may display a warning because the app isn't from the Play Store. If prompted, tap <strong class="accent-text">Download anyway</strong>, <strong class="accent-text">Keep</strong>, or <strong class="accent-text">Continue</strong>.</span>
+              </div>
+              <p class="step-note">⏳ Wait for the download to finish before continuing.</p>
+            `
+          },
+          {
+            title: "Open the Downloaded File",
+            desc: "Locate and launch the APK.",
+            html: `
+              <p>Once the download is complete:</p>
+              <ul>
+                <li>📲 Tap the <strong>download notification</strong>, <strong>or</strong></li>
+                <li>📁 Open your <strong>Downloads</strong> folder and find the <code class="accent-text">.apk</code> file.</li>
+              </ul>
+              <p>Tap the APK to begin the installation.</p>
+            `
+          },
+          {
+            title: "Install Zangetsu",
+            desc: "Allow the installation and wait.",
+            html: `
+              <div class="flair-notice">
+                <span class="icon">🔒</span>
+                <span>If Android blocks the installation, tap <strong class="accent-text">Settings</strong> and enable <strong class="accent-text">Allow from this source</strong> or <strong class="accent-text">Install unknown apps</strong> for the browser or file manager you're using.</span>
+              </div>
+              <p>Return to the installer, tap <strong class="accent-text">Install</strong>, and wait for the process to finish.</p>
+            `
+          },
+          {
+            title: "Open Zangetsu",
+            desc: "Launch the app and start streaming.",
+            html: `
+              <p>When installation is complete, tap <strong class="accent-text">Open</strong> to launch Zangetsu.</p>
+              <p>If you choose <strong>Done</strong>, you can open the app later from your <strong>Home Screen</strong> or <strong>App Drawer</strong>.</p>
+              <div class="flair-success">
+                <span>✅ You're all set! Enjoy the show.</span>
+              </div>
+            `
+          }
+        ];
+
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        const progressBar = document.getElementById('progress-bar');
+        const stepCountEl = document.getElementById('step-count');
+        const stepContent = document.getElementById('step-content');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const dots = document.querySelectorAll('.dot');
+
+        function renderStep(step) {
+          const data = steps[step - 1];
+          let html = `
+            <div class="step-header">
+              <div class="step-badge">${step}</div>
+              <div class="step-title">
+                <h2 id="step-heading">${data.title}</h2>
+                <p class="step-desc">${data.desc}</p>
+              </div>
+            </div>
+            ${data.html}
+          `;
+          stepContent.innerHTML = html;
+
+          if (step === 1) {
+            loadApkList();
+          }
+
+          const percent = (step / totalSteps) * 100;
+          progressBar.style.width = percent + '%';
+          stepCountEl.textContent = `Step ${step} of ${totalSteps}`;
+
+          dots.forEach(d => {
+            const s = parseInt(d.dataset.step);
+            d.classList.toggle('active', s <= step);
+          });
+
+          prevBtn.disabled = (step === 1);
+          if (step === totalSteps) {
+            nextBtn.textContent = 'Finish';
+          } else {
+            nextBtn.textContent = 'Next →';
+          }
+        }
+
+        // Build APK list – ensures window.__latestAssets is populated
+        function loadApkList() {
+          const container = document.getElementById('apk-list');
+          if (!container) return;
+
+          // If assets are missing, fetch them and then re-run this function
+          if (!window.__latestAssets || window.__latestAssets.length === 0) {
+            container.innerHTML = '<p class="loading-spinner"><span>Loading downloads…</span></p>';
+            if (typeof fetchReleaseAssets === 'function') {
+              fetchReleaseAssets()
+                .then(() => {
+                  if (window.__latestAssets && window.__latestAssets.length > 0) {
+                    loadApkList(); // data is ready, now render
+                  } else {
+                    container.innerHTML = '<p>No APK files found in the latest release.</p>';
+                  }
+                })
+                .catch(() => {
+                  container.innerHTML = '<p>Failed to load downloads. <button class="ghost-button" onclick="loadApkList()">Retry</button></p>';
+                });
+            }
+            return;
+          }
+
+          const assets = window.__latestAssets;
+          const apks = assets.filter(a => a.name.toLowerCase().endsWith('.apk'));
+
+          if (apks.length === 0) {
+            container.innerHTML = '<p>No APK files found in the latest release.</p>';
+            return;
+          }
+
+          const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
+          const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
+          const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
+          const other = apks.filter(a => a !== universal && a !== arm64 && a !== armv7);
+
+          container.innerHTML = '';
+          if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
+          if (arm64) container.appendChild(createApkRow(arm64, 'ARM64 (arm64-v8a)', 'For most modern Android phones and tablets with a 64-bit processor.'));
+          if (armv7) container.appendChild(createApkRow(armv7, 'ARMv7 (armeabi-v7a)', 'For older Android devices that use a 32-bit processor.'));
+          if (other.length > 0) {
+            other.forEach(apk => container.appendChild(createApkRow(apk, apk.name, 'Additional variant')));
+          }
+        }
+
+        function createApkRow(asset, label, description) {
+          const row = document.createElement('a');
+          row.className = 'download-row-item';
+          row.href = asset.browser_download_url;
+          row.target = '_blank';
+          row.rel = 'noopener noreferrer';
+          row.innerHTML = `
+            <span class="download-icon">⬇️</span>
+            <div class="apk-info">
+              <span class="apk-label">${label}</span>
+              <span class="apk-desc">${description}</span>
+            </div>
+          `;
+          return row;
+        }
+
+        function goToStep(step) {
+          currentStep = step;
+          renderStep(step);
+          window.scrollTo({ top: document.getElementById('main-content').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        nextBtn.addEventListener('click', () => {
+          if (currentStep < totalSteps) {
+            goToStep(currentStep + 1);
+          } else {
+            alert('🎉 Installation guide complete!');
+          }
+        });
+
+        prevBtn.addEventListener('click', () => {
+          if (currentStep > 1) {
+            goToStep(currentStep - 1);
+          }
+        });
+
+        // ---- Startup: fetch assets first, then render step 1 ----
+        if (typeof fetchReleaseAssets === 'function') {
+          fetchReleaseAssets()
+            .then(() => {
+              renderStep(1);
+            })
+            .catch(() => {
+              // API failed – still render so error message can appear
+              renderStep(1);
+            });
+        } else {
+          stepContent.innerHTML = '<p>Required scripts failed to load. Please refresh the page.</p>';
+        }
+      });
+    </script>
+  </body>
+</html>
