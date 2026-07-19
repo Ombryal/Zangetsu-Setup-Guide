@@ -31,7 +31,7 @@
           <span class="device-name">Android</span>
           <a href="../guide/" class="ghost-button change-btn pill-btn">Change</a>
         </div>
-        <a href="../settings/" class="settings-icon" aria-label="Settings">⚙️</a>
+        <!-- No settings icon -->
       </div>
     </header>
 
@@ -94,6 +94,7 @@
       <a href="../repos/" class="footer-link">Repos</a>
     </footer>
 
+    <!-- (JavaScript code identical to previous version, omitted for brevity) -->
     <script>
       (function() {
         // ---------- Step content definitions (with flair) ----------
@@ -159,7 +160,6 @@
         let currentStep = 1;
         const totalSteps = 5;
 
-        // DOM elements
         const progressBar = document.getElementById('progress-bar');
         const stepCountEl = document.getElementById('step-count');
         const stepContent = document.getElementById('step-content');
@@ -167,7 +167,6 @@
         const nextBtn = document.getElementById('next-btn');
         const dots = document.querySelectorAll('.dot');
 
-        // Render a step
         function renderStep(step) {
           const data = steps[step-1];
           let html = `
@@ -182,23 +181,19 @@
           `;
           stepContent.innerHTML = html;
 
-          // If step 1, load APK list
           if (step === 1) {
             loadApkList();
           }
 
-          // Update progress
           const percent = (step / totalSteps) * 100;
           progressBar.style.width = percent + '%';
           stepCountEl.textContent = `Step ${step} of ${totalSteps}`;
 
-          // Update dots
           dots.forEach(d => {
             const s = parseInt(d.dataset.step);
             d.classList.toggle('active', s <= step);
           });
 
-          // Buttons state
           prevBtn.disabled = (step === 1);
           if (step === totalSteps) {
             nextBtn.textContent = 'Finish';
@@ -207,7 +202,6 @@
           }
         }
 
-        // APK list loader (unchanged – still categorizes by architecture)
         function loadApkList() {
           const container = document.getElementById('apk-list');
           if (!container) return;
@@ -256,7 +250,6 @@
           tryRender();
         }
 
-        // Navigation
         function goToStep(step) {
           currentStep = step;
           renderStep(step);
@@ -267,7 +260,6 @@
           if (currentStep < totalSteps) {
             goToStep(currentStep + 1);
           } else {
-            // Finish – small celebratory effect
             alert('🎉 Installation guide complete!');
           }
         });
@@ -278,7 +270,6 @@
           }
         });
 
-        // Initialize
         renderStep(1);
       })();
     </script>
