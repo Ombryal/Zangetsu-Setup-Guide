@@ -94,184 +94,191 @@
       <a href="../repos/" class="footer-link">Repos</a>
     </footer>
 
-    <!-- (JavaScript code identical to previous version, omitted for brevity) -->
     <script>
-      (function() {
-        // ---------- Step content definitions (with flair) ----------
-        const steps = [
-          { // Step 1
-            title: "Choose the Correct APK",
-            desc: "Select the APK that matches your device.",
-            html: `
-              <div class="download-options" id="apk-list">
-                <p class="loading-spinner"><span>Loading downloads…</span></p>
-              </div>
-              <p class="step-note"><span class="accent-text">🔍 Tip:</span> If you don't know your device's architecture, simply download the <strong class="accent-text">Universal APK</strong>.</p>
-            `
-          },
-          { // Step 2
-            title: "Download the APK",
-            desc: "Get the file onto your device.",
-            html: `
-              <p>Tap the download button for your chosen APK.</p>
-              <div class="flair-notice">
-                <span class="icon">⚠️</span>
-                <span>Your browser may display a warning because the app isn't from the Play Store. If prompted, tap <strong class="accent-text">Download anyway</strong>, <strong class="accent-text">Keep</strong>, or <strong class="accent-text">Continue</strong>.</span>
-              </div>
-              <p class="step-note">⏳ Wait for the download to finish before continuing.</p>
-            `
-          },
-          { // Step 3
-            title: "Open the Downloaded File",
-            desc: "Locate and launch the APK.",
-            html: `
-              <p>Once the download is complete:</p>
-              <ul>
-                <li>📲 Tap the <strong>download notification</strong>, <strong>or</strong></li>
-                <li>📁 Open your <strong>Downloads</strong> folder and find the <code class="accent-text">.apk</code> file.</li>
-              </ul>
-              <p>Tap the APK to begin the installation.</p>
-            `
-          },
-          { // Step 4
-            title: "Install Zangetsu",
-            desc: "Allow the installation and wait.",
-            html: `
-              <div class="flair-notice">
-                <span class="icon">🔒</span>
-                <span>If Android blocks the installation, tap <strong class="accent-text">Settings</strong> and enable <strong class="accent-text">Allow from this source</strong> or <strong class="accent-text">Install unknown apps</strong> for the browser or file manager you're using.</span>
-              </div>
-              <p>Return to the installer, tap <strong class="accent-text">Install</strong>, and wait for the process to finish.</p>
-            `
-          },
-          { // Step 5
-            title: "Open Zangetsu",
-            desc: "Launch the app and start streaming.",
-            html: `
-              <p>When installation is complete, tap <strong class="accent-text">Open</strong> to launch Zangetsu.</p>
-              <p>If you choose <strong>Done</strong>, you can open the app later from your <strong>Home Screen</strong> or <strong>App Drawer</strong>.</p>
-              <div class="flair-success">
-                <span>✅ You're all set! Enjoy the show.</span>
-              </div>
-            `
-          }
-        ];
+  (function() {
+    // Step definitions (unchanged)
+    const steps = [
+      { 
+        title: "Choose the Correct APK",
+        desc: "Select the APK that matches your device.",
+        html: `
+          <div class="download-options" id="apk-list">
+            <p class="loading-spinner"><span>Loading downloads…</span></p>
+          </div>
+          <p class="step-note"><span class="accent-text">🔍 Tip:</span> If you don't know your device's architecture, simply download the <strong class="accent-text">Universal APK</strong>.</p>
+        `
+      },
+      { 
+        title: "Download the APK",
+        desc: "Get the file onto your device.",
+        html: `
+          <p>Tap the download button for your chosen APK.</p>
+          <div class="flair-notice">
+            <span class="icon">⚠️</span>
+            <span>Your browser may display a warning because the app isn't from the Play Store. If prompted, tap <strong class="accent-text">Download anyway</strong>, <strong class="accent-text">Keep</strong>, or <strong class="accent-text">Continue</strong>.</span>
+          </div>
+          <p class="step-note">⏳ Wait for the download to finish before continuing.</p>
+        `
+      },
+      { 
+        title: "Open the Downloaded File",
+        desc: "Locate and launch the APK.",
+        html: `
+          <p>Once the download is complete:</p>
+          <ul>
+            <li>📲 Tap the <strong>download notification</strong>, <strong>or</strong></li>
+            <li>📁 Open your <strong>Downloads</strong> folder and find the <code class="accent-text">.apk</code> file.</li>
+          </ul>
+          <p>Tap the APK to begin the installation.</p>
+        `
+      },
+      { 
+        title: "Install Zangetsu",
+        desc: "Allow the installation and wait.",
+        html: `
+          <div class="flair-notice">
+            <span class="icon">🔒</span>
+            <span>If Android blocks the installation, tap <strong class="accent-text">Settings</strong> and enable <strong class="accent-text">Allow from this source</strong> or <strong class="accent-text">Install unknown apps</strong> for the browser or file manager you're using.</span>
+          </div>
+          <p>Return to the installer, tap <strong class="accent-text">Install</strong>, and wait for the process to finish.</p>
+        `
+      },
+      { 
+        title: "Open Zangetsu",
+        desc: "Launch the app and start streaming.",
+        html: `
+          <p>When installation is complete, tap <strong class="accent-text">Open</strong> to launch Zangetsu.</p>
+          <p>If you choose <strong>Done</strong>, you can open the app later from your <strong>Home Screen</strong> or <strong>App Drawer</strong>.</p>
+          <div class="flair-success">
+            <span>✅ You're all set! Enjoy the show.</span>
+          </div>
+        `
+      }
+    ];
 
-        let currentStep = 1;
-        const totalSteps = 5;
+    let currentStep = 1;
+    const totalSteps = 5;
 
-        const progressBar = document.getElementById('progress-bar');
-        const stepCountEl = document.getElementById('step-count');
-        const stepContent = document.getElementById('step-content');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const dots = document.querySelectorAll('.dot');
+    const progressBar = document.getElementById('progress-bar');
+    const stepCountEl = document.getElementById('step-count');
+    const stepContent = document.getElementById('step-content');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const dots = document.querySelectorAll('.dot');
 
-        function renderStep(step) {
-          const data = steps[step-1];
-          let html = `
-            <div class="step-header">
-              <div class="step-badge">${step}</div>
-              <div class="step-title">
-                <h2 id="step-heading">${data.title}</h2>
-                <p class="step-desc">${data.desc}</p>
-              </div>
-            </div>
-            ${data.html}
-          `;
-          stepContent.innerHTML = html;
+    function renderStep(step) {
+      const data = steps[step-1];
+      let html = `
+        <div class="step-header">
+          <div class="step-badge">${step}</div>
+          <div class="step-title">
+            <h2 id="step-heading">${data.title}</h2>
+            <p class="step-desc">${data.desc}</p>
+          </div>
+        </div>
+        ${data.html}
+      `;
+      stepContent.innerHTML = html;
 
-          if (step === 1) {
-            loadApkList();
-          }
+      if (step === 1) {
+        loadApkList();
+      }
 
-          const percent = (step / totalSteps) * 100;
-          progressBar.style.width = percent + '%';
-          stepCountEl.textContent = `Step ${step} of ${totalSteps}`;
+      const percent = (step / totalSteps) * 100;
+      progressBar.style.width = percent + '%';
+      stepCountEl.textContent = `Step ${step} of ${totalSteps}`;
 
-          dots.forEach(d => {
-            const s = parseInt(d.dataset.step);
-            d.classList.toggle('active', s <= step);
-          });
+      dots.forEach(d => {
+        const s = parseInt(d.dataset.step);
+        d.classList.toggle('active', s <= step);
+      });
 
-          prevBtn.disabled = (step === 1);
-          if (step === totalSteps) {
-            nextBtn.textContent = 'Finish';
-          } else {
-            nextBtn.textContent = 'Next →';
-          }
+      prevBtn.disabled = (step === 1);
+      if (step === totalSteps) {
+        nextBtn.textContent = 'Finish';
+      } else {
+        nextBtn.textContent = 'Next →';
+      }
+    }
+
+    async function loadApkList() {
+      const container = document.getElementById('apk-list');
+      if (!container) return;
+
+      try {
+        // Fetch assets via the new shared function
+        if (!window.__latestAssets || window.__latestAssets.length === 0) {
+          await fetchReleaseAssets();
+        }
+        const assets = window.__latestAssets || [];
+        const apks = assets.filter(a => a.name.toLowerCase().endsWith('.apk'));
+
+        if (apks.length === 0) {
+          container.innerHTML = '<p>No APK files found in the latest release.</p>';
+          return;
         }
 
-        function loadApkList() {
-          const container = document.getElementById('apk-list');
-          if (!container) return;
+        const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
+        const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
+        const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
+        const other = apks.filter(a => a !== universal && a !== arm64 && a !== armv7);
 
-          function tryRender() {
-            if (window.__latestAssets && window.__latestAssets.length > 0) {
-              const apks = window.__latestAssets.filter(a => a.name.toLowerCase().endsWith('.apk'));
-              if (apks.length === 0) {
-                container.innerHTML = '<p>No APK files found in the latest release.</p>';
-                return;
-              }
-              const universal = apks.find(a => a.name.toLowerCase().includes('universal'));
-              const arm64 = apks.find(a => a.name.toLowerCase().includes('arm64-v8a') || a.name.toLowerCase().includes('arm64'));
-              const armv7 = apks.find(a => a.name.toLowerCase().includes('armeabi-v7a') || a.name.toLowerCase().includes('armv7'));
-              const other = apks.filter(a => a !== universal && a !== arm64 && a !== armv7);
-
-              container.innerHTML = '';
-              if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
-              if (arm64) container.appendChild(createApkRow(arm64, 'ARM64 (arm64-v8a)', 'For most modern Android phones and tablets with a 64-bit processor.'));
-              if (armv7) container.appendChild(createApkRow(armv7, 'ARMv7 (armeabi-v7a)', 'For older Android devices that use a 32-bit processor.'));
-              if (other.length > 0) {
-                other.forEach(apk => container.appendChild(createApkRow(apk, apk.name, 'Additional variant')));
-              }
-            } else {
-              container.innerHTML = '<p class="loading-spinner"><span>Loading downloads…</span></p>';
-              setTimeout(tryRender, 300);
-            }
-          }
-
-          function createApkRow(asset, label, description) {
-            const row = document.createElement('a');
-            row.className = 'download-row-item';
-            row.href = asset.browser_download_url;
-            row.target = '_blank';
-            row.rel = 'noopener noreferrer';
-            row.innerHTML = `
-              <span class="download-icon">⬇️</span>
-              <div class="apk-info">
-                <span class="apk-label">${label}</span>
-                <span class="apk-desc">${description}</span>
-              </div>
-            `;
-            return row;
-          }
-
-          tryRender();
+        container.innerHTML = '';
+        if (universal) container.appendChild(createApkRow(universal, 'Universal APK (Recommended)', 'Works on almost all Android devices.'));
+        if (arm64) container.appendChild(createApkRow(arm64, 'ARM64 (arm64-v8a)', 'For most modern Android phones and tablets with a 64-bit processor.'));
+        if (armv7) container.appendChild(createApkRow(armv7, 'ARMv7 (armeabi-v7a)', 'For older Android devices that use a 32-bit processor.'));
+        if (other.length > 0) {
+          other.forEach(apk => container.appendChild(createApkRow(apk, apk.name, 'Additional variant')));
         }
+      } catch (error) {
+        container.innerHTML = `<p>Could not load downloads: ${error.message}</p>`;
+      }
+    }
 
-        function goToStep(step) {
-          currentStep = step;
-          renderStep(step);
-          window.scrollTo({ top: document.getElementById('main-content').offsetTop - 20, behavior: 'smooth' });
-        }
+    function createApkRow(asset, label, description) {
+      const row = document.createElement('a');
+      row.className = 'download-row-item';
+      row.href = asset.browser_download_url;
+      row.target = '_blank';
+      row.rel = 'noopener noreferrer';
+      row.innerHTML = `
+        <span class="download-icon">⬇️</span>
+        <div class="apk-info">
+          <span class="apk-label">${label}</span>
+          <span class="apk-desc">${description}</span>
+        </div>
+      `;
+      return row;
+    }
 
-        nextBtn.addEventListener('click', () => {
-          if (currentStep < totalSteps) {
-            goToStep(currentStep + 1);
-          } else {
-            alert('🎉 Installation guide complete!');
-          }
-        });
+    function goToStep(step) {
+      currentStep = step;
+      renderStep(step);
+      window.scrollTo({ top: document.getElementById('main-content').offsetTop - 20, behavior: 'smooth' });
+    }
 
-        prevBtn.addEventListener('click', () => {
-          if (currentStep > 1) {
-            goToStep(currentStep - 1);
-          }
-        });
+    nextBtn.addEventListener('click', () => {
+      if (currentStep < totalSteps) {
+        goToStep(currentStep + 1);
+      } else {
+        alert('🎉 Installation guide complete!');
+      }
+    });
 
-        renderStep(1);
-      })();
-    </script>
-  </body>
-</html>
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 1) {
+        goToStep(currentStep - 1);
+      }
+    });
+
+    // Kick off asset fetch immediately
+    fetchReleaseAssets().then(() => {
+      // If we're already on step 1, render the APK list
+      if (currentStep === 1) {
+        loadApkList();
+      }
+    });
+
+    renderStep(1);
+  })();
+            </script>
